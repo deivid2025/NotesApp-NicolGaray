@@ -607,7 +607,7 @@ function StickyNote({
         onPointerCancel={lp.onPointerCancel}
         onContextMenu={lp.onContextMenu}
         aria-label={isDone ? `Marcar «${task.title}» como no hecha` : `Marcar «${task.title}» como hecha`}
-        className={`tb-note-btn tb-paper relative block w-full p-[14px] text-left text-[#111] ${ringClass} ${isNextUp ? "tb-nextup" : ""}`}
+        className={`tb-note-btn tb-paper relative block w-full rounded-2xl p-[14px] text-left text-[#111] ${ringClass} ${isNextUp ? "tb-nextup" : ""}`}
         style={{
           background: task.color,
           transform: `rotate(${task.rotation}deg)`,
@@ -615,7 +615,6 @@ function StickyNote({
           fontFamily: "var(--font-patrick-hand), cursive",
           opacity: isDone ? 0.55 : 1,
           touchAction: "manipulation",
-          borderRadius: "63% 37% 54% 46% / 55% 48% 52% 45%",
         }}
       >
         {/* crumpled paper texture overlay (subtle bumps + valleys + crease lines) */}
@@ -1476,7 +1475,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
 
         {/* Header */}
         <header className="relative px-5 pb-4 pt-9">
-          <FlowerDoodle className="absolute right-1 top-0 h-32 w-28 sm:h-36 sm:w-32 lg:h-40 lg:w-36 pointer-events-none z-10" />
+          <FlowerDoodle className="absolute right-2 top-24 h-20 w-16 sm:h-24 sm:w-20 lg:h-28 lg:w-24 pointer-events-none z-[5]" />
 
           {/* date + streak row */}
           <div className="mb-2 flex items-center justify-between">
