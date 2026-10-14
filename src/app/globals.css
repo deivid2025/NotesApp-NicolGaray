@@ -120,3 +120,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Ocultar el indicador/botón de Next.js DevTools en desarrollo */
+nextjs-portal,
+[data-nextjs-toast-wrapper],
+[data-nextjs-dev-tools-button],
+.__next-build-indicator,
+button[aria-label="Open in Next.js"] {
+  display: none !important;
+}

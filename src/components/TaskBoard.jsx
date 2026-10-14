@@ -804,8 +804,12 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
   const [draftPriority, setDraftPriority] = useState(2);
   const [draftRecurrence, setDraftRecurrence] = useState("none");
 
-  // persist (allowed external-sync effect)
+  // hydrate flag — evita que el persist effect sobreescriba localStorage antes de hidratar
+  const hydratedRef = useRef(false);
+
+  // persist (allowed external-sync effect) — solo después de hidratar
   useEffect(() => {
+    if (!hydratedRef.current) return;
     try {
       window.localStorage.setItem(
         STORAGE_KEY,
@@ -830,6 +834,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
     }
     setNow(new Date());
     const id = window.setInterval(() => setNow(new Date()), 60000);
+    hydratedRef.current = true;
     return () => window.clearInterval(id);
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
@@ -1629,13 +1634,12 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
           {visibleTasks.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               {!searchQuery && (
-                <div className="tb-char-float mb-3" style={{ width: "200px", maxWidth: "70vw" }}>
-                  { }
+                <div className="tb-char-float mb-3 flex items-center justify-center" style={{ width: "180px", maxWidth: "65vw", height: "180px", maxHeight: "50vh" }}>
                   <img
                     src={GROUP_EMPTY_IMAGE}
                     alt="Equipo descansando"
-                    className="h-auto w-full"
-                    style={{ filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.35))" }}
+                    className="h-auto max-h-full w-auto max-w-full"
+                    style={{ filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.35))", objectFit: "contain" }}
                     draggable={false}
                   />
                 </div>
@@ -1735,17 +1739,15 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
         )}
       </div>
 
-      {/* Bottom floating bar — filtro+reloj a la izquierda, "+" a la derecha (como la imagen original) */}
-      <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 w-[358px] sm:w-[400px] lg:w-[440px]" style={{ maxWidth: "calc(100% - 32px)" }}>
-        <div className="flex items-center justify-between rounded-full px-3 py-2.5" style={{ background: "rgba(23,23,23,0.7)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.1)" }}>
-          {/* Izquierda: filtro + reloj */}
-          <div className="flex items-center gap-1.5">
-            <button type="button" onClick={() => setFilterOpen(true)} aria-label="Filtrar tareas" className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${filter !== "all" || searchQuery ? "bg-[#2563eb] text-white" : "text-white/80 hover:bg-white/10"}`}><Filter size={18} /></button>
-            <button type="button" onClick={jumpToNextUp} aria-label="Saltar a la siguiente tarea" className="flex h-9 w-9 items-center justify-center rounded-full text-white/80 transition-colors hover:bg-white/10"><Clock size={18} /></button>
-          </div>
-          {/* Derecha: botón "+" */}
-          <button type="button" onClick={openAdd} aria-label="Añadir tarea" className="tb-plus-pulse flex h-11 w-11 items-center justify-center rounded-full bg-white text-black transition-transform active:scale-95"><Plus size={22} strokeWidth={2.5} /></button>
+      {/* Bottom floating bar — botones SEPARADOS (no en cápsula) */}
+      <div className="fixed bottom-6 left-1/2 z-40 flex w-[358px] -translate-x-1/2 items-center justify-between px-1 sm:w-[400px] lg:w-[440px]" style={{ maxWidth: "calc(100% - 32px)" }}>
+        {/* Izquierda: filtro + reloj como botones individuales flotantes */}
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={() => setFilterOpen(true)} aria-label="Filtrar tareas" className={`flex h-11 w-11 items-center justify-center rounded-full backdrop-blur-md transition-colors ${filter !== "all" || searchQuery ? "bg-[#2563eb] text-white" : "bg-neutral-900/70 text-white/80 hover:bg-white/10"}`} style={{ border: "1px solid rgba(255,255,255,0.1)" }}><Filter size={18} /></button>
+          <button type="button" onClick={jumpToNextUp} aria-label="Saltar a la siguiente tarea" className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-900/70 text-white/80 backdrop-blur-md transition-colors hover:bg-white/10" style={{ border: "1px solid rgba(255,255,255,0.1)" }}><Clock size={18} /></button>
         </div>
+        {/* Derecha: botón "+" individual flotante */}
+        <button type="button" onClick={openAdd} aria-label="Añadir tarea" className="tb-plus-pulse flex h-12 w-12 items-center justify-center rounded-full bg-white text-black transition-transform active:scale-95" style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.4)" }}><Plus size={24} strokeWidth={2.5} /></button>
       </div>
 
       {/* Add / Edit sheet */}
