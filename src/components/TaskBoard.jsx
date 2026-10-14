@@ -1470,7 +1470,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
 
         {/* Header */}
         <header className="relative px-5 pb-4 pt-9">
-          <FlowerDoodle className="absolute right-1 top-6 h-40 w-36 sm:h-48 sm:w-44 lg:h-52 lg:w-48 pointer-events-none" />
+          <FlowerDoodle className="absolute right-2 top-1 h-20 w-16 sm:h-24 sm:w-20 pointer-events-none opacity-90" />
 
           {/* date + streak row */}
           <div className="mb-2 flex items-center justify-between">
