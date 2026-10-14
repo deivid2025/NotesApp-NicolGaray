@@ -89,6 +89,7 @@ import {
   playAchievementSound,
   playCompleteSound,
   playFailSound,
+  playWowSound,
 } from "@/lib/bleach";
 import { BleachDialogue, BleachAchievement, AchievementGallery } from "@/components/BleachOverlay";
 import { ToastAction } from "@/components/ui/toast";
@@ -776,7 +777,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
       const ach = ACHIEVEMENTS.find((a) => a.id === achId);
       if (ach) {
         setBleachAchievement(ach);
-        if (soundEnabled) playAchievementSound(ach.tier);
+        if (soundEnabled) { playAchievementSound(ach.tier); playWowSound(); }
         // also show a dialogue
         setTimeout(() => setBleachDialogue(pickDialogue("achievement")), 600);
       }
@@ -1327,7 +1328,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
             whiteSpace: "nowrap",
           }}
         >
-          Nicol Garay App
+          NotesApp Deivid Uchiha
         </div>
       </div>
       <style>{`

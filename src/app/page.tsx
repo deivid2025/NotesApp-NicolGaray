@@ -1,5 +1,5 @@
 import TaskBoard from "@/components/TaskBoard";
 
 export default function Home() {
-  return <TaskBoard name="Nicol Garay" />;
+  return <TaskBoard name="Deivid Uchiha" />;
 }

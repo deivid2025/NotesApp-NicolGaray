@@ -286,6 +286,32 @@ export function playFailSound() {
   });
 }
 
+export function playWowSound() {
+  // "Wow!" — expressive rising-then-falling sweep with shimmer
+  // Rising part: quick upward glissando (C5 → G5)
+  [523, 587, 659, 698, 784, 880].forEach((f, i) => {
+    playTone(f, 0.08, "triangle", 0.05, i * 0.04, {
+      filterFreq: 5000, attack: 0.005, decay: 0.04, sustainLevel: 0.5, release: 0.05,
+    });
+  });
+  // Held "aaaoo" — falling sawtooth with vibrato feel (G5 → C5)
+  playTone(880, 0.45, "sawtooth", 0.045, 0.24, {
+    filterFreq: 1800, attack: 0.02, decay: 0.15, sustainLevel: 0.55, release: 0.2,
+    detune: 5,
+  });
+  playTone(659, 0.4, "sawtooth", 0.04, 0.42, {
+    filterFreq: 1500, attack: 0.02, decay: 0.15, sustainLevel: 0.5, release: 0.2,
+    detune: -3,
+  });
+  // Shimmer sparkle on top (high harmonics)
+  playTone(2637, 0.3, "sine", 0.02, 0.3, {
+    filterFreq: 8000, attack: 0.01, decay: 0.1, sustainLevel: 0.4, release: 0.15,
+  });
+  playTone(3520, 0.25, "sine", 0.015, 0.38, {
+    filterFreq: 9000, attack: 0.01, decay: 0.08, sustainLevel: 0.35, release: 0.12,
+  });
+}
+
 /* ── Helpers ───────────────────────────────────────────────────────────── */
 
 /**

@@ -26,24 +26,24 @@ const patrickHand = Patrick_Hand({
 });
 
 export const metadata: Metadata = {
-  title: "Nicol Garay App — Tablero de Tareas",
+  title: "NotesApp Deivid Uchiha — Tablero de Tareas",
   description: "Tablero de tareas con estilo doodle, notas adhesivas y logros inspirados en Bleach.",
-  keywords: ["tablero", "tareas", "notas", "productividad", "Bleach", "Nicol Garay"],
-  authors: [{ name: "Nicol Garay" }],
+  keywords: ["tablero", "tareas", "notas", "productividad", "Bleach", "Deivid Uchiha"],
+  authors: [{ name: "Deivid Uchiha" }],
   icons: {
     icon: "/app-icon.png",
     apple: "/app-icon.png",
   },
   openGraph: {
-    title: "Nicol Garay App",
+    title: "NotesApp Deivid Uchiha",
     description: "Tablero de tareas con estilo doodle, notas adhesivas y logros inspirados en Bleach.",
     url: "https://chat.z.ai",
-    siteName: "Nicol Garay App",
+    siteName: "NotesApp Deivid Uchiha",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nicol Garay App",
+    title: "NotesApp Deivid Uchiha",
     description: "Tablero de tareas con estilo doodle, notas adhesivas y logros inspirados en Bleach.",
   },
 };
