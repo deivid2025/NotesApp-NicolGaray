@@ -28,8 +28,8 @@ export function BleachDialogue({ dialogue, onDismiss }) {
 
   return (
     <div
-      className={`pointer-events-none fixed left-1/2 top-16 z-[70] -translate-x-1/2 transition-all duration-300 ${
-        visible ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"
+      className={`pointer-events-none fixed bottom-24 left-1/2 z-[70] -translate-x-1/2 transition-all duration-300 ${
+        visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
       }`}
       style={{ width: "calc(100% - 32px)", maxWidth: "358px" }}
     >

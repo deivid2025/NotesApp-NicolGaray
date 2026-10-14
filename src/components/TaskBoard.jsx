@@ -306,6 +306,14 @@ function FlowerDoodle({ className = "" }) {
         <g transform="rotate(288)"><path d="M0 0 C -8 -8, -8 -22, 0 -28 C 8 -22, 8 -8, 0 0 Z" /></g>
       </g>
       <circle cx="32" cy="30" r="7" fill="#ffe94a" stroke="#3b82f6" strokeWidth="2.2" />
+      {/* kawaii smiley face on the flower center */}
+      <ellipse cx="29.6" cy="28.8" rx="0.9" ry="1.25" fill="#1a1a2e" />
+      <ellipse cx="34.4" cy="28.8" rx="0.9" ry="1.25" fill="#1a1a2e" />
+      <circle cx="29.3" cy="28.4" r="0.3" fill="#fff" />
+      <circle cx="34.1" cy="28.4" r="0.3" fill="#fff" />
+      <path d="M29.4 31.2 Q32 33.6 34.6 31.2" stroke="#1a1a2e" strokeWidth="0.95" strokeLinecap="round" fill="none" />
+      <circle cx="28.2" cy="31.6" r="0.85" fill="#ff4fa3" opacity="0.55" />
+      <circle cx="35.8" cy="31.6" r="0.85" fill="#ff4fa3" opacity="0.55" />
     </svg>
   );
 }
@@ -606,6 +614,8 @@ function StickyNote({
           touchAction: "manipulation",
         }}
       >
+        {/* crumpled paper texture overlay (subtle bumps + valleys + crease lines) */}
+        <span aria-hidden="true" className="tb-paper-texture" />
         {/* status accent strip (top) */}
         {!isDone && (
           <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] rounded-t-[4px]" style={{ background: statusMeta.color, opacity: status === "later" ? 0.45 : 0.95 }} />
@@ -617,82 +627,85 @@ function StickyNote({
 
         {/* done stamp */}
         {isDone && (
-          <span aria-hidden="true" className="tb-stamp pointer-events-none absolute -right-2 top-6 select-none" style={{ color: "#0b0b0c", border: "3px double #0b0b0c", borderRadius: "4px", padding: "1px 6px", fontFamily: "var(--font-patrick-hand), cursive", fontWeight: 700, fontSize: "13px", letterSpacing: "1px", transform: "rotate(-8deg)", background: "rgba(255,255,255,0.25)" }}>DONE</span>
+          <span aria-hidden="true" className="tb-stamp pointer-events-none absolute -right-2 top-6 z-[3] select-none" style={{ color: "#0b0b0c", border: "3px double #0b0b0c", borderRadius: "4px", padding: "1px 6px", fontFamily: "var(--font-patrick-hand), cursive", fontWeight: 700, fontSize: "13px", letterSpacing: "1px", transform: "rotate(-8deg)", background: "rgba(255,255,255,0.25)" }}>DONE</span>
         )}
 
-        {/* emoji + check */}
-        <div className="flex items-start justify-between">
-          <span className="text-2xl leading-none">{task.emoji}</span>
-          <span className={`flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors ${isDone ? "border-[#0b0b0c] bg-[#0b0b0c] text-[#39ff14]" : "border-[#0b0b0c]/40 text-transparent"}`}>
-            <Check size={12} strokeWidth={3.5} />
-          </span>
-        </div>
-
-        {/* title */}
-        <h3 className="mt-2 line-clamp-2 min-w-0 overflow-hidden text-[16px] font-normal leading-snug" style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textDecoration: isDone ? "line-through" : "none", textDecorationThickness: "2px" }}>{task.title}</h3>
-
-        {/* pills: time, duration, status, tag */}
-        <div className="mt-3 flex min-w-0 flex-wrap gap-1.5">
-          <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-medium" style={{ background: "rgba(17,17,17,0.85)", color: "#fff" }}>
-            <Clock size={11} strokeWidth={2.5} />{task.startTime} - {task.endTime}
-          </span>
-          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[12px] font-medium" style={{ background: "rgba(17,17,17,0.85)", color: "#fff" }}>en {task.duration}min</span>
-          {!isDone && status !== "later" && (
-            <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: statusMeta.color, color: "#0b0b0c" }}>{statusMeta.label}</span>
-          )}
-          {task.tag && TAG_MAP[task.tag] && (
-            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: "rgba(255,255,255,0.9)", color: TAG_MAP[task.tag].color, border: `1px solid ${TAG_MAP[task.tag].color}40` }}>
-              <Tag size={9} />{TAG_MAP[task.tag].label}
+        {/* content wrapper — lifted above the paper texture (z-[2]) */}
+        <div className="relative z-[2]">
+          {/* emoji + check */}
+          <div className="flex items-start justify-between">
+            <span className="text-2xl leading-none">{task.emoji}</span>
+            <span className={`flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors ${isDone ? "border-[#0b0b0c] bg-[#0b0b0c] text-[#39ff14]" : "border-[#0b0b0c]/40 text-transparent"}`}>
+              <Check size={12} strokeWidth={3.5} />
             </span>
-          )}
-          {task.priority && PRIORITY_MAP[task.priority] && (
-            <span className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold" style={{ background: PRIORITY_MAP[task.priority].color, color: "#0b0b0c" }}>
-              {PRIORITY_MAP[task.priority].label}
-            </span>
-          )}
-          {task.recurrence && task.recurrence !== "none" && RECURRENCE_MAP[task.recurrence] && (
-            <span className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold" style={{ background: `${RECURRENCE_MAP[task.recurrence].color}25`, color: RECURRENCE_MAP[task.recurrence].color, border: `1px solid ${RECURRENCE_MAP[task.recurrence].color}60` }} title={`Se repite ${RECURRENCE_MAP[task.recurrence].label.toLowerCase()}`}>
-              <Repeat size={8} />{RECURRENCE_MAP[task.recurrence].label}
-            </span>
-          )}
-        </div>
-
-        {/* subtask checklist + progress */}
-        {task.subtasks && task.subtasks.length > 0 && (
-          <div className="mt-2.5 rounded-md bg-black/15 p-2">
-            <div className="mb-1.5 flex items-center justify-between">
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-[#0b0b0c]/70">
-                <ListChecks size={11} /> checklist
-              </span>
-              <span className="text-[10px] font-bold text-[#0b0b0c]/60">
-                {task.subtasks.filter((s) => s.done).length}/{task.subtasks.length}
-              </span>
-            </div>
-            {/* mini progress bar */}
-            <div className="mb-2 h-1 overflow-hidden rounded-full bg-black/20">
-              <div className="h-full rounded-full bg-[#0b0b0c] transition-all" style={{ width: `${(task.subtasks.filter((s) => s.done).length / task.subtasks.length) * 100}%` }} />
-            </div>
-            <div className="flex flex-col gap-1">
-              {task.subtasks.map((s) => (
-                <div
-                  key={s.id}
-                  role="button"
-                  tabIndex={0}
-                  onClick={(e) => { e.stopPropagation(); onToggleSubtask(task.id, s.id); }}
-                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); onToggleSubtask(task.id, s.id); } }}
-                  className="flex min-w-0 cursor-pointer items-start gap-1.5 text-left text-[12px] leading-tight text-[#0b0b0c]/85 transition-opacity hover:opacity-80"
-                  style={{ fontFamily: "var(--font-patrick-hand), cursive", fontSize: "13px" }}
-                >
-                  {s.done ? <CheckSquare size={12} className="mt-0.5 shrink-0 text-[#0b0b0c]" /> : <Square size={12} className="mt-0.5 shrink-0 text-[#0b0b0c]/50" />}
-                  <span style={{ textDecoration: s.done ? "line-through" : "none", opacity: s.done ? 0.55 : 1 }}>{s.text}</span>
-                </div>
-              ))}
-            </div>
           </div>
-        )}
+
+          {/* title */}
+          <h3 className="mt-2 line-clamp-2 min-w-0 overflow-hidden text-[16px] font-normal leading-snug" style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textDecoration: isDone ? "line-through" : "none", textDecorationThickness: "2px" }}>{task.title}</h3>
+
+          {/* pills: time, duration, status, tag */}
+          <div className="mt-3 flex min-w-0 flex-wrap gap-1.5">
+            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-medium" style={{ background: "rgba(17,17,17,0.85)", color: "#fff" }}>
+              <Clock size={11} strokeWidth={2.5} />{task.startTime} - {task.endTime}
+            </span>
+            <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[12px] font-medium" style={{ background: "rgba(17,17,17,0.85)", color: "#fff" }}>en {task.duration}min</span>
+            {!isDone && status !== "later" && (
+              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: statusMeta.color, color: "#0b0b0c" }}>{statusMeta.label}</span>
+            )}
+            {task.tag && TAG_MAP[task.tag] && (
+              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: "rgba(255,255,255,0.9)", color: TAG_MAP[task.tag].color, border: `1px solid ${TAG_MAP[task.tag].color}40` }}>
+                <Tag size={9} />{TAG_MAP[task.tag].label}
+              </span>
+            )}
+            {task.priority && PRIORITY_MAP[task.priority] && (
+              <span className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold" style={{ background: PRIORITY_MAP[task.priority].color, color: "#0b0b0c" }}>
+                {PRIORITY_MAP[task.priority].label}
+              </span>
+            )}
+            {task.recurrence && task.recurrence !== "none" && RECURRENCE_MAP[task.recurrence] && (
+              <span className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold" style={{ background: `${RECURRENCE_MAP[task.recurrence].color}25`, color: RECURRENCE_MAP[task.recurrence].color, border: `1px solid ${RECURRENCE_MAP[task.recurrence].color}60` }} title={`Se repite ${RECURRENCE_MAP[task.recurrence].label.toLowerCase()}`}>
+                <Repeat size={8} />{RECURRENCE_MAP[task.recurrence].label}
+              </span>
+            )}
+          </div>
+
+          {/* subtask checklist + progress */}
+          {task.subtasks && task.subtasks.length > 0 && (
+            <div className="mt-2.5 rounded-md bg-black/15 p-2">
+              <div className="mb-1.5 flex items-center justify-between">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-[#0b0b0c]/70">
+                  <ListChecks size={11} /> checklist
+                </span>
+                <span className="text-[10px] font-bold text-[#0b0b0c]/60">
+                  {task.subtasks.filter((s) => s.done).length}/{task.subtasks.length}
+                </span>
+              </div>
+              {/* mini progress bar */}
+              <div className="mb-2 h-1 overflow-hidden rounded-full bg-black/20">
+                <div className="h-full rounded-full bg-[#0b0b0c] transition-all" style={{ width: `${(task.subtasks.filter((s) => s.done).length / task.subtasks.length) * 100}%` }} />
+              </div>
+              <div className="flex flex-col gap-1">
+                {task.subtasks.map((s) => (
+                  <div
+                    key={s.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => { e.stopPropagation(); onToggleSubtask(task.id, s.id); }}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); onToggleSubtask(task.id, s.id); } }}
+                    className="flex min-w-0 cursor-pointer items-start gap-1.5 text-left text-[12px] leading-tight text-[#0b0b0c]/85 transition-opacity hover:opacity-80"
+                    style={{ fontFamily: "var(--font-patrick-hand), cursive", fontSize: "13px" }}
+                  >
+                    {s.done ? <CheckSquare size={12} className="mt-0.5 shrink-0 text-[#0b0b0c]" /> : <Square size={12} className="mt-0.5 shrink-0 text-[#0b0b0c]/50" />}
+                    <span style={{ textDecoration: s.done ? "line-through" : "none", opacity: s.done ? 0.55 : 1 }}>{s.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* "more" affordance — visible on touch too, opens action menu */}
-        <span aria-hidden="true" className="pointer-events-none absolute bottom-1.5 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/20 text-white/70 opacity-70 transition-opacity group-hover:opacity-100">
+        <span aria-hidden="true" className="pointer-events-none absolute bottom-1.5 right-2 z-[3] flex h-6 w-6 items-center justify-center rounded-full bg-black/20 text-white/70 opacity-70 transition-opacity group-hover:opacity-100">
           <MoreHorizontal size={14} />
         </span>
       </button>
@@ -1350,6 +1363,52 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
         .tb-dash { animation: tb-dash 1.2s linear infinite; }
 
         .tb-paper { background-image: radial-gradient(rgba(0,0,0,0.10) 1px, transparent 1px), radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px); background-size: 7px 7px, 11px 11px; background-position: 0 0, 3px 3px; }
+
+        /* Crumpled paper texture overlay — subtle bumps + valleys + crease lines.
+           The wrapper span is intentionally NOT given a z-index so it does not
+           create its own stacking context — that way the ::before/::after
+           pseudo-elements (which carry mix-blend-mode) blend with the card's
+           colored background instead of with an empty backdrop.
+           ::before uses multiply (darkens) for the creases/valleys.
+           ::after uses screen (lightens) for the bumps/highlights.
+           Splitting the blend modes is necessary because the cards use bright
+           neon colors where overlay would only show one direction. */
+        .tb-paper-texture { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+        .tb-paper-texture::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background:
+            radial-gradient(circle at 28% 18%, rgba(0,0,0,0.45) 0%, transparent 22%),
+            radial-gradient(circle at 72% 78%, rgba(0,0,0,0.40) 0%, transparent 28%),
+            radial-gradient(circle at 50% 45%, rgba(0,0,0,0.28) 0%, transparent 35%),
+            radial-gradient(circle at 88% 60%, rgba(0,0,0,0.35) 0%, transparent 20%),
+            radial-gradient(circle at 60% 25%, rgba(0,0,0,0.25) 0%, transparent 22%),
+            radial-gradient(circle at 22% 55%, rgba(0,0,0,0.28) 0%, transparent 20%),
+            linear-gradient(115deg, transparent 36%, rgba(0,0,0,0.26) 41%, transparent 46%),
+            linear-gradient(118deg, transparent 60%, rgba(0,0,0,0.22) 65%, transparent 70%),
+            linear-gradient(75deg, transparent 50%, rgba(0,0,0,0.20) 54%, transparent 58%),
+            linear-gradient(135deg, rgba(0,0,0,0.15) 0%, transparent 35%, rgba(0,0,0,0.18) 100%);
+          opacity: 1;
+          z-index: 0;
+        }
+        .tb-paper-texture::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background:
+            radial-gradient(circle at 82% 32%, rgba(255,255,255,0.50) 0%, transparent 20%),
+            radial-gradient(circle at 18% 68%, rgba(255,255,255,0.45) 0%, transparent 24%),
+            radial-gradient(circle at 15% 30%, rgba(255,255,255,0.35) 0%, transparent 18%),
+            radial-gradient(circle at 40% 80%, rgba(255,255,255,0.32) 0%, transparent 22%),
+            radial-gradient(circle at 65% 15%, rgba(255,255,255,0.28) 0%, transparent 18%),
+            linear-gradient(95deg, transparent 20%, rgba(255,255,255,0.28) 25%, transparent 30%),
+            linear-gradient(155deg, transparent 45%, rgba(255,255,255,0.22) 50%, transparent 55%);
+          opacity: 1;
+          z-index: 0;
+        }
 
         .tb-note-btn { transition: transform 0.18s ease, opacity 0.25s ease, box-shadow 0.18s ease; }
         .tb-note-btn:hover { transform: rotate(0deg) translateY(-3px) !important; }
