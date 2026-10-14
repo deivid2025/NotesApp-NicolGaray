@@ -5,7 +5,6 @@ import {
   Filter,
   Clock,
   Plus,
-  Menu,
   Check,
   Sparkles,
   Pencil,
@@ -735,7 +734,6 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
   const [lastClearedDate, setLastClearedDate] = useState(null);
 
   const [filter, setFilter] = useState("all");
-  const [barExpanded, setBarExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTag, setActiveTag] = useState("all");
   const [nextUpId, setNextUpId] = useState(null);
@@ -1472,7 +1470,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
 
         {/* Header */}
         <header className="relative px-5 pb-4 pt-9">
-          <FlowerDoodle className="absolute right-3 top-2 h-16 w-12" />
+          <FlowerDoodle className="absolute right-1 top-6 h-40 w-36 sm:h-48 sm:w-44 lg:h-52 lg:w-48 pointer-events-none" />
 
           {/* date + streak row */}
           <div className="mb-2 flex items-center justify-between">
@@ -1736,19 +1734,15 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
         )}
       </div>
 
-      {/* Bottom floating bar — solo el botón "+" siempre visible; Filtro/Reloj colapsables */}
+      {/* Bottom floating bar — filtro+reloj a la izquierda, "+" a la derecha (como la imagen original) */}
       <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 w-[358px] sm:w-[400px] lg:w-[440px]" style={{ maxWidth: "calc(100% - 32px)" }}>
-        <div className="flex items-center justify-center rounded-full px-3 py-2.5 relative" style={{ background: "rgba(23,23,23,0.7)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.1)" }}>
-          {/* Filtro + Reloj — colapsables en móvil con un toggle */}
-          <div className={`flex items-center gap-1 absolute left-2 transition-all duration-300 ${barExpanded ? "opacity-100 translate-x-0 pointer-events-auto" : "opacity-0 -translate-x-4 pointer-events-none sm:opacity-100 sm:translate-x-0 sm:pointer-events-auto"}`}>
+        <div className="flex items-center justify-between rounded-full px-3 py-2.5" style={{ background: "rgba(23,23,23,0.7)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.1)" }}>
+          {/* Izquierda: filtro + reloj */}
+          <div className="flex items-center gap-1.5">
             <button type="button" onClick={() => setFilterOpen(true)} aria-label="Filtrar tareas" className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${filter !== "all" || searchQuery ? "bg-[#2563eb] text-white" : "text-white/80 hover:bg-white/10"}`}><Filter size={18} /></button>
             <button type="button" onClick={jumpToNextUp} aria-label="Saltar a la siguiente tarea" className="flex h-9 w-9 items-center justify-center rounded-full text-white/80 transition-colors hover:bg-white/10"><Clock size={18} /></button>
           </div>
-          {/* Toggle para mostrar/ocultar filtro+reloj en móvil */}
-          <button type="button" onClick={() => setBarExpanded((v) => !v)} aria-label={barExpanded ? "Ocultar herramientas" : "Mostrar herramientas"} className="absolute left-2 flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 sm:hidden">
-            <Menu size={18} />
-          </button>
-          {/* Botón "+" centrado — siempre visible */}
+          {/* Derecha: botón "+" */}
           <button type="button" onClick={openAdd} aria-label="Añadir tarea" className="tb-plus-pulse flex h-11 w-11 items-center justify-center rounded-full bg-white text-black transition-transform active:scale-95"><Plus size={22} strokeWidth={2.5} /></button>
         </div>
       </div>
