@@ -1475,7 +1475,8 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
 
         {/* Header */}
         <header className="relative px-5 pb-4 pt-9">
-          <FlowerDoodle className="absolute right-2 top-24 h-20 w-16 sm:h-24 sm:w-20 lg:h-28 lg:w-24 pointer-events-none z-[5]" />
+          {/* Flor — reposicionada abajo a la derecha del header, no se superpone con textos */}
+          <FlowerDoodle className="pointer-events-none absolute right-1 bottom-2 h-20 w-16 sm:h-24 sm:w-20 z-[1]" />
 
           {/* date + streak row */}
           <div className="mb-2 flex items-center justify-between">
@@ -1489,7 +1490,8 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
             )}
           </div>
 
-          {/* avatar + greeting — avatar is tappable to edit profile */}
+          {/* avatar + greeting — avatar is tappable to edit profile.
+              Saludo con max-width para que la flor no tape; truncar nombres largos con ellipsis. */}
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -1504,20 +1506,20 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
                 <PencilLine size={10} />
               </span>
             </button>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-2xl font-bold leading-tight tracking-tight tb-themed-text sm:text-3xl lg:text-4xl">
-                <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0">
+            <div className="relative z-[2] min-w-0 flex-1" style={{ maxWidth: "calc(100% - 120px)" }}>
+              <h1 className="truncate text-2xl font-bold leading-tight tracking-tight tb-themed-text sm:text-3xl lg:text-4xl" title={`${greeting.word}, ${displayName}`}>
+                <span className="inline-flex items-center gap-x-2">
                   <GreetingDoodle emoji={greeting.emoji} className="h-5 w-5 shrink-0 sm:h-6 sm:w-6 lg:h-7 lg:w-7" />
                   <span className="whitespace-nowrap">{greeting.word},</span>
-                  <span className="whitespace-nowrap">{displayName}</span>
+                  <span className="whitespace-nowrap overflow-hidden text-ellipsis">{displayName}</span>
                 </span>
               </h1>
             </div>
           </div>
-          <svg className="mt-0.5 h-2 w-40 text-[#ffe94a]/70" viewBox="0 0 160 8" fill="none" aria-hidden="true">
+          <svg className="relative z-[2] mt-0.5 h-2 w-40 text-[#ffe94a]/70" viewBox="0 0 160 8" fill="none" aria-hidden="true">
             <path d="M2 5 C 30 1, 60 7, 90 4 S 140 2, 158 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
           </svg>
-          <p className="mt-2 flex items-center gap-2 tb-themed-muted" style={{ fontFamily: "var(--font-caveat), cursive", fontSize: "24px", lineHeight: "1.2", fontWeight: 500 }}>
+          <p className="relative z-[2] mt-2 tb-themed-muted" style={{ fontFamily: "var(--font-caveat), cursive", fontSize: "24px", lineHeight: "1.2", fontWeight: 500, maxWidth: "calc(100% - 90px)" }}>
             <span>{subtitleNode}</span>
           </p>
 
@@ -1529,83 +1531,22 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
             </div>
           </div>
 
-          {/* status summary chips */}
-          {remaining > 0 && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {statusCounts.active > 0 && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-[#39ff14]/40 bg-[#39ff14]/10 px-2 py-0.5 text-[11px] font-semibold text-[#39ff14]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#39ff14]" /> {statusCounts.active} ahora
-                </span>
-              )}
-              {statusCounts.soon > 0 && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-[#ffe94a]/40 bg-[#ffe94a]/10 px-2 py-0.5 text-[11px] font-semibold text-[#ffe94a]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#ffe94a]" /> {statusCounts.soon} pronto
-                </span>
-              )}
-              {statusCounts.overdue > 0 && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-[#ff4fa3]/40 bg-[#ff4fa3]/10 px-2 py-0.5 text-[11px] font-semibold text-[#ff4fa3]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#ff4fa3]" /> {statusCounts.overdue} pasada{statusCounts.overdue === 1 ? "" : "s"}
-                </span>
-              )}
-              {statusCounts.later > 0 && (
-                <span className="tb-themed-surface inline-flex items-center gap-1 rounded-full border border-white/15 px-2 py-0.5 text-[11px] font-medium tb-themed-muted">
-                  <span className="h-1.5 w-1.5 rounded-full bg-current opacity-40" /> {statusCounts.later} después
-                </span>
-              )}
+          {/* total deck time — solo undo, sin iconos de enfoque/tema/más acciones */}
+          {undoStack.length > 0 && (
+            <div className="mt-3 flex items-center">
+              <button type="button" onClick={undo} aria-label="Deshacer última acción" title="Deshacer (Ctrl/Cmd+Z)" className="flex h-7 w-7 items-center justify-center rounded-full border border-[#ffe94a]/40 bg-[#ffe94a]/15 text-[#ffe94a] transition-colors hover:bg-[#ffe94a]/25">
+                <Undo2 size={13} />
+              </button>
             </div>
           )}
-
-          {/* total deck time + quick actions */}
-          <div className="mt-3 flex items-center justify-between gap-2">
-            {remaining > 0 ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#3b82f6]/40 bg-[#3b82f6]/10 px-2.5 py-1 text-[11px] font-semibold text-[#60a5fa]">
-                <Hourglass size={12} /> {formatDuración(totalDeckMinutes)} en el tablero
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#39ff14]/40 bg-[#39ff14]/10 px-2.5 py-1 text-[11px] font-semibold text-[#39ff14]">
-                <Check size={12} /> tablero completado
-              </span>
-            )}
-            <div className="flex items-center gap-1.5">
-              {/* primary always-visible actions */}
-              {undoStack.length > 0 && (
-                <button type="button" onClick={undo} aria-label="Deshacer última acción" title="Deshacer (Ctrl/Cmd+Z)" className="flex h-7 w-7 items-center justify-center rounded-full border border-[#ffe94a]/40 bg-[#ffe94a]/15 text-[#ffe94a] transition-colors hover:bg-[#ffe94a]/25">
-                  <Undo2 size={13} />
-                </button>
-              )}
-              <button type="button" onClick={toggleFocusMode} aria-label="Activar modo enfoque" title="Modo enfoque (F)" className={`flex h-7 w-7 items-center justify-center rounded-full border transition-colors ${focusMode ? "border-[#ffe94a] bg-[#ffe94a]/20 text-[#ffe94a]" : "tb-themed-surface border-white/10 tb-themed-muted hover:bg-white/10"}`}>
-                <Focus size={13} />
-              </button>
-              <button type="button" onClick={toggleTheme} aria-label="Cambiar tema" title="Tema (T)" className="flex h-7 w-7 items-center justify-center rounded-full border tb-themed-surface border-white/10 tb-themed-muted transition-colors hover:bg-white/10">
-                {theme === "dark" ? <Sun size={13} /> : <Moon size={13} />}
-              </button>
-              {/* overflow "more" menu for secondary actions */}
-              <button type="button" onClick={() => setMoreMenuOpen(true)} aria-label="Más acciones" title="Más acciones" className="flex h-7 w-7 items-center justify-center rounded-full border tb-themed-surface border-white/10 tb-themed-muted transition-colors hover:bg-white/10">
-                <EllipsisVertical size={13} />
-              </button>
-            </div>
-          </div>
         </header>
 
         {/* Skewed label */}
         <div className="mb-3 flex justify-center px-5">
           <div className="rounded-md px-4 py-1.5" style={{ background: "#2563eb", transform: "skewX(-12deg)" }}>
-            <span className="text-[13px] font-semibold tracking-wide text-white" style={{ display: "inline-block", transform: "skewX(12deg)" }}>¿Qué hay en el tablero hoy</span>
+            <span className="text-[13px] font-semibold tracking-wide text-white" style={{ display: "inline-block", transform: "skewX(12deg)" }}>What's on deck today</span>
           </div>
         </div>
-
-        {/* Quick critical (P1) filter chip — only when there are P1 tasks and no other filter active */}
-        {filter === "all" && !searchQuery && taskList.some((t) => (t.priority || 3) === 1 && !completedIds.has(t.id)) && (
-          <div className="mb-3 flex justify-center">
-            <button
-              type="button"
-              onClick={() => { setFilter("active"); setActiveTag("all"); setSearchQuery(""); setSortByPriority(true); }}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[#ff4fa3]/50 bg-[#ff4fa3]/10 px-3 py-1 text-[12px] font-semibold text-[#ff4fa3] transition-colors hover:bg-[#ff4fa3]/20"
-            >
-              <CircleAlert size={12} /> {taskList.filter((t) => (t.priority || 3) === 1 && !completedIds.has(t.id)).length} crítica{taskList.filter((t) => (t.priority || 3) === 1 && !completedIds.has(t.id)).length === 1 ? "" : "s"} (P1)
-            </button>
-          </div>
-        )}
 
         {/* Active filter chip */}
         {filter !== "all" && (
@@ -1621,11 +1562,6 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
           <p className="mb-2 text-center text-[13px] tb-themed-muted" style={{ fontFamily: "var(--font-caveat), cursive", fontSize: "16px" }}>
             {searchQuery ? `${visibleTasks.length} resultados para «${searchQuery}»` : `mostrando ${visibleTasks.length} de ${total}`}
           </p>
-        )}
-
-        {/* Day timeline — only on the default view */}
-        {filter === "all" && !searchQuery && taskList.length > 0 && (
-          <DayTimeline tasks={taskList} completedIds={completedIds} now={now} onJumpTask={(t) => { setNextUpId(t.id); setTimeout(() => { const el = document.getElementById(`task-${t.id}`); if (el) el.scrollIntoView({ behavior: "smooth", block: "center" }); }, 60); toast({ title: "Saltando a", description: `«${t.title}»` }); }} />
         )}
 
         {/* Task list */}
