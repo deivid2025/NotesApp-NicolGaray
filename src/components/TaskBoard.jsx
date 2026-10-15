@@ -378,27 +378,25 @@ function playCelebrate() {
   notes.forEach((f, i) => playTone(f, 0.16, "triangle", 0.08, i * 0.12));
 }
 
-function FlowerDoodle({ className = "" }) {
+function FlowerDoodle({ className = "", style }) {
   return (
-    <svg viewBox="0 0 64 80" className={className} fill="none" aria-hidden="true">
-      <path d="M32 44 C 30 56, 34 66, 31 78" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M32 60 C 24 56, 17 60, 16 67 C 24 68, 31 66, 32 60 Z" fill="#4ade80" fillOpacity="0.85" stroke="#16a34a" strokeWidth="1.2" strokeLinejoin="round" />
-      <g transform="translate(32 30)" stroke="#3b82f6" strokeWidth="2.2" fill="rgba(59,130,246,0.18)" strokeLinejoin="round">
-        <g transform="rotate(0)"><path d="M0 0 C -8 -8, -8 -22, 0 -28 C 8 -22, 8 -8, 0 0 Z" /></g>
-        <g transform="rotate(72)"><path d="M0 0 C -8 -8, -8 -22, 0 -28 C 8 -22, 8 -8, 0 0 Z" /></g>
-        <g transform="rotate(144)"><path d="M0 0 C -8 -8, -8 -22, 0 -28 C 8 -22, 8 -8, 0 0 Z" /></g>
-        <g transform="rotate(216)"><path d="M0 0 C -8 -8, -8 -22, 0 -28 C 8 -22, 8 -8, 0 0 Z" /></g>
-        <g transform="rotate(288)"><path d="M0 0 C -8 -8, -8 -22, 0 -28 C 8 -22, 8 -8, 0 0 Z" /></g>
+    <svg viewBox="0 0 120 200" className={className} style={style} fill="none" aria-hidden="true">
+      <g fill="none" stroke="#1E6BFF" strokeWidth="3">
+        <circle cx="60" cy="26" r="16" /><circle cx="81.9" cy="33.9" r="16" />
+        <circle cx="93.5" cy="54.1" r="16" /><circle cx="89.4" cy="77" r="16" />
+        <circle cx="71.6" cy="91.9" r="16" /><circle cx="48.4" cy="91.9" r="16" />
+        <circle cx="30.6" cy="77" r="16" /><circle cx="26.5" cy="54.1" r="16" />
+        <circle cx="38.1" cy="33.9" r="16" />
       </g>
-      <circle cx="32" cy="30" r="7" fill="#ffe94a" stroke="#3b82f6" strokeWidth="2.2" />
-      {/* kawaii smiley face on the flower center */}
-      <ellipse cx="29.6" cy="28.8" rx="0.9" ry="1.25" fill="#1a1a2e" />
-      <ellipse cx="34.4" cy="28.8" rx="0.9" ry="1.25" fill="#1a1a2e" />
-      <circle cx="29.3" cy="28.4" r="0.3" fill="#fff" />
-      <circle cx="34.1" cy="28.4" r="0.3" fill="#fff" />
-      <path d="M29.4 31.2 Q32 33.6 34.6 31.2" stroke="#1a1a2e" strokeWidth="0.95" strokeLinecap="round" fill="none" />
-      <circle cx="28.2" cy="31.6" r="0.85" fill="#ff4fa3" opacity="0.55" />
-      <circle cx="35.8" cy="31.6" r="0.85" fill="#ff4fa3" opacity="0.55" />
+      <circle cx="60" cy="60" r="28" fill="#F5E94A" />
+      <path d="M43 56q6-8 12 0M65 56q6-8 12 0M50 68q10 10 20 0" fill="none" stroke="#111" strokeWidth="2.4" strokeLinecap="round" />
+      <circle cx="42" cy="67" r="4" fill="#FF9AC8" />
+      <circle cx="78" cy="67" r="4" fill="#FF9AC8" />
+      <g fill="none" stroke="#4ADE50" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M60 90C56 120 66 150 60 190M60 190l-9-16M60 190l9-16" />
+        <path d="M62 128C82 128 96 118 100 104M100 104l-7 3M100 104l2 8" />
+        <path d="M59 152C44 152 34 146 28 134M28 134l8 1M28 134l1 8" />
+      </g>
     </svg>
   );
 }
@@ -440,43 +438,9 @@ function GreetingDoodle({ emoji, className = "" }) {
   );
 }
 
-function BgDoodles() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      <svg className="absolute left-3 top-44 h-6 w-6 text-white/10" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2 L14 9 L22 9 L15.5 13.5 L18 21 L12 16.5 L6 21 L8.5 13.5 L2 9 L10 9 Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-      </svg>
-      <svg className="absolute right-2 top-72 h-16 w-16 text-white/[0.06]" viewBox="0 0 80 80" fill="none">
-        <path d="M8 40 C 20 20, 40 60, 60 30 S 78 18, 76 40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="3 5" />
-      </svg>
-      <svg className="absolute left-4 top-[420px] h-5 w-5 text-[#ff4fa3]/30" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 5.65-7 10-7 10z" />
-      </svg>
-      <svg className="absolute right-6 top-[600px] h-5 w-5 text-[#9d4dff]/30" viewBox="0 0 24 24" fill="none">
-        <path d="M12 3 L13.5 9 L20 9 L14.5 13 L16 19 L12 15.5 L8 19 L9.5 13 L4 9 L10.5 9 Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-      </svg>
-      <svg className="absolute left-8 top-[820px] h-4 w-4 text-[#39ff14]/30" viewBox="0 0 24 24" fill="currentColor">
-        <circle cx="12" cy="12" r="3" />
-      </svg>
-      <svg className="absolute right-4 top-[940px] h-14 w-14 text-white/[0.05]" viewBox="0 0 80 80" fill="none">
-        <path d="M10 40 C 24 24, 44 56, 70 40" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 6" />
-      </svg>
-    </div>
-  );
-}
-
-/* Hand-drawn dashed frame around the board with corner doodles */
-function DoodleFrame() {
-  return (
-    <div className="pointer-events-none absolute inset-2 z-0" aria-hidden="true">
-      <div className="absolute inset-0 rounded-2xl border border-dashed border-white/[0.07]" />
-      <svg className="absolute -left-1 -top-1 h-5 w-5 text-[#ffe94a]/50" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1 L13 5 L17 4 L14 7 L17 10 L13 9 L12 13 L11 9 L7 10 L10 7 L7 4 L11 5 Z" /></svg>
-      <svg className="absolute -right-1 -top-1 h-5 w-5 text-[#ff4fa3]/50" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4" /></svg>
-      <svg className="absolute -left-1 -bottom-1 h-5 w-5 text-[#9d4dff]/50" viewBox="0 0 24 24" fill="none"><path d="M4 12 C 8 4, 16 20, 20 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" /></svg>
-      <svg className="absolute -right-1 -bottom-1 h-5 w-5 text-[#39ff14]/50" viewBox="0 0 24 24" fill="none"><path d="M5 12 L9 16 L19 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
-    </div>
-  );
-}
+/* DoodleFrame y BgDoodles eliminados — sin restos decorativos sueltos */
+function DoodleFrame() { return null; }
+function BgDoodles() { return null; }
 
 function ProgressRing({ done, total, size = 40 }) {
   const stroke = 4;
@@ -635,7 +599,7 @@ function DayTimeline({ tasks, completedIds, now, onJumpTask }) {
               opacity: b.done ? 0.3 : 0.85,
             }}
           >
-            <span className="block truncate px-0.5 text-center text-[8px] leading-tight text-[#0b0b0c]" style={{ fontFamily: "var(--font-patrick-hand), cursive" }}>
+            <span className="block truncate px-0.5 text-center text-[8px] leading-tight text-[#000000]" style={{ fontFamily: "var(--font-patrick-hand), cursive" }}>
               {b.task.emoji}
             </span>
           </button>
@@ -721,6 +685,33 @@ function StickyNote({
           <span className="pill" style={{ display: "inline-flex", alignItems: "center", padding: "3px 8px", borderRadius: "99px", background: pillBg, fontSize: "10.5px" }}>en {task.duration}min</span>
         </div>
       </button>
+      {/* Doodles — hijos del wrapper .card, hermanos de .paper (NUNCA dentro del clip-path) */}
+      {index === 1 && (
+        <svg className="doodle butterfly" viewBox="0 0 100 100" fill="none" style={{ position: "absolute", pointerEvents: "none", zIndex: 4, opacity: 1, width: "66px", bottom: "calc(100% - 6px)", right: "14%" }} aria-hidden="true">
+          <g stroke="#4ADE50" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M48 52C30 20 4 22 8 44C10 58 34 62 48 52Z" />
+            <path d="M48 56C34 66 18 80 28 88C38 94 46 76 48 62" />
+            <path d="M52 52C70 20 96 22 92 44C90 58 66 62 52 52Z" />
+            <path d="M52 56C66 66 82 80 72 88C62 94 54 76 52 62" />
+          </g>
+          <path d="M45 40L50 16L55 40Z" fill="#FF9AC8" stroke="#111" strokeWidth="1.5" strokeLinejoin="round" />
+          <rect x="45" y="40" width="10" height="42" rx="3" fill="#F5E94A" stroke="#111" strokeWidth="1.5" />
+          <path d="M45 82L50 95L55 82Z" fill="#E6C200" stroke="#111" strokeWidth="1.5" strokeLinejoin="round" />
+          <circle cx="48" cy="52" r="1.3" fill="#111" />
+          <circle cx="52" cy="52" r="1.3" fill="#111" />
+          <path d="M48.5 58q1.5 2 3 0" stroke="#111" strokeWidth="1.2" strokeLinecap="round" />
+        </svg>
+      )}
+      {index === 3 && (
+        <svg className="doodle fish" viewBox="0 0 120 100" fill="none" stroke="#F5C518" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", pointerEvents: "none", zIndex: 4, opacity: 1, width: "56px", right: "calc(100% + 14px)", top: "18%" }} aria-hidden="true">
+          <path d="M20 52C26 28 62 18 84 34C94 42 96 56 84 68C62 84 28 78 20 52Z" />
+          <path d="M92 44L114 28C112 40 112 60 114 72L92 58" />
+          <path d="M44 24L50 8L58 22L66 6L72 24" />
+          <path d="M48 74L44 90L60 78" />
+          <path d="M52 38C58 46 58 58 52 66M62 46q4 4 0 8M72 48q4 4 0 8" />
+          <circle cx="34" cy="46" r="3" />
+        </svg>
+      )}
     </div>
   );
 }
@@ -1350,12 +1341,12 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
         </div>
       </div>
       <style>{`
-        html, body { background-color: #0b0b0c; }
+        html, body { background-color: #000000; }
         html.tb-theme-light, html.tb-theme-light body { background-color: #f5f1e8; }
-        html.tb-theme-dark, html.tb-theme-dark body { background-color: #0b0b0c; }
+        html.tb-theme-dark, html.tb-theme-dark body { background-color: #000000; }
 
         .tb-theme-light { --tb-bg: #f5f1e8; --tb-text: #1a1a2e; --tb-card-text: #1a1a2e; --tb-muted: rgba(26,26,46,0.55); --tb-border: rgba(26,26,46,0.15); --tb-surface: rgba(255,255,255,0.7); --tb-header-text: #1a1a2e; --tb-watermark: rgba(0,0,0,0.04); }
-        .tb-theme-dark  { --tb-bg: #0b0b0c; --tb-text: #fff; --tb-card-text: #111; --tb-muted: rgba(255,255,255,0.55); --tb-border: rgba(255,255,255,0.1); --tb-surface: rgba(23,23,23,0.7); --tb-header-text: #fff; --tb-watermark: rgba(255,255,255,0.04); }
+        .tb-theme-dark  { --tb-bg: #000000; --tb-text: #fff; --tb-card-text: #111; --tb-muted: rgba(255,255,255,0.55); --tb-border: rgba(255,255,255,0.1); --tb-surface: rgba(23,23,23,0.7); --tb-header-text: #fff; --tb-watermark: rgba(255,255,255,0.04); }
 
         .tb-themed-bg { background-color: var(--tb-bg); }
         .tb-themed-text { color: var(--tb-text); }
@@ -1481,10 +1472,10 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
         {/* Header — minimalista como la referencia "Hello Bea" */}
         <header className="relative px-6 pb-3 pt-10">
           {/* Flor — esquina superior derecha, grande, con cara sonriente, z-index por debajo del texto */}
-          <FlowerDoodle className="pointer-events-none absolute right-4 top-8 h-24 w-20 sm:h-28 sm:w-24 z-[1]" />
+          <FlowerDoodle className="pointer-events-none" style={{ position: "absolute", top: "42px", right: "28px", width: "92px", height: "143px", zIndex: 0 }} />
 
           {/* Saludo: Inter 700, 44px, line-height 1, letter-spacing -0.03em, #fff */}
-          <h1 className="relative z-[2] text-white" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "44px", fontWeight: 700, lineHeight: "1", letterSpacing: "-0.03em" }}>
+          <h1 className="relative z-[2] text-white" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "44px", fontWeight: 700, lineHeight: "1", letterSpacing: "-0.03em", maxWidth: "60%" }}>
             Hola {firstName}
           </h1>
 
@@ -1501,23 +1492,11 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
           </p>
 
           {/* Botón azul: Gochi Hand 20px */}
-          <div className="mt-6 mb-[26px] flex justify-center">
+          <div className="mt-8 mb-[26px] flex justify-center">
             <div className="px-5 py-1.5" style={{ background: "#0EA5E9", transform: "skewX(-12deg)" }}>
               <span className="text-white" style={{ fontFamily: "var(--font-gochi-hand), cursive", fontSize: "20px", display: "inline-block", transform: "skewX(12deg)" }}>What's on deck today</span>
             </div>
           </div>
-
-          {/* avatar flotante pequeño abajo-derecha (editable, pero no en el saludo) */}
-          <button
-            type="button"
-            onClick={openProfile}
-            aria-label="Editar perfil"
-            title="Editar tu perfil"
-            className="group absolute bottom-2 right-2 z-[3] flex h-9 w-9 items-center justify-center rounded-full text-lg transition-transform active:scale-95"
-            style={{ background: profile?.avatarColor || "#3b82f6", boxShadow: `0 0 0 2px ${profile?.avatarColor || "#3b82f6"}55, 2px 2px 0 rgba(0,0,0,0.4)` }}
-          >
-            <span className="leading-none">{profile?.avatar || "🙂"}</span>
-          </button>
 
           {/* undo button (solo si hay acciones) */}
           {undoStack.length > 0 && (
@@ -1544,7 +1523,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
         )}
 
         {/* Task list — contenedor relative con ArrowLayer */}
-        <div className="px-4 pb-36 relative" ref={taskListRef}>
+        <div className="px-4 relative" style={{ paddingBottom: "170px" }} ref={taskListRef}>
           <ArrowLayer containerRef={taskListRef} />
           {visibleTasks.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -1592,9 +1571,9 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
           })}
         </div>
 
-        {/* Tomorrow peek — a collapsible preview of tasks that may roll into tomorrow */}
+        {/* Tomorrow peek — oculto por defecto (se muestra cuando el panel está abierto) */}
         {tomorrowPeek.length > 0 && filter === "all" && !searchQuery && (
-          <div className="px-4 pb-32">
+          <div className="px-4 pb-32" style={{ display: "none" }}>
             <button
               type="button"
               onClick={() => setTomorrowExpanded((v) => !v)}
@@ -1616,7 +1595,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
                       <Clock size={10} /> {t.startTime}
                     </span>
                     {t.priority === 1 && (
-                      <span className="rounded-full bg-[#ff4fa3] px-1.5 py-0.5 text-[9px] font-bold text-[#0b0b0c]">P1</span>
+                      <span className="rounded-full bg-[#ff4fa3] px-1.5 py-0.5 text-[9px] font-bold text-[#000000]">P1</span>
                     )}
                   </div>
                 ))}
@@ -1627,15 +1606,16 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
         )}
       </div>
 
-      {/* Bottom floating bar — botones SEPARADOS (no en cápsula) */}
-      <div className="fixed bottom-6 left-1/2 z-40 flex w-[358px] -translate-x-1/2 items-center justify-between px-1 sm:w-[400px] lg:w-[440px]" style={{ maxWidth: "calc(100% - 32px)" }}>
-        {/* Izquierda: filtro + reloj como botones individuales flotantes */}
-        <div className="flex items-center gap-2">
-          <button type="button" onClick={() => setFilterOpen(true)} aria-label="Filtrar tareas" className={`flex h-11 w-11 items-center justify-center rounded-full backdrop-blur-md transition-colors ${filter !== "all" || searchQuery ? "bg-[#2563eb] text-white" : "bg-neutral-900/70 text-white/80 hover:bg-white/10"}`} style={{ border: "1px solid rgba(255,255,255,0.1)" }}><Filter size={18} /></button>
-          <button type="button" onClick={jumpToNextUp} aria-label="Saltar a la siguiente tarea" className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-900/70 text-white/80 backdrop-blur-md transition-colors hover:bg-white/10" style={{ border: "1px solid rgba(255,255,255,0.1)" }}><Clock size={18} /></button>
+      {/* Fade inferior */}
+      <div className="fade" style={{ position: "fixed", left: 0, right: 0, bottom: 0, height: "110px", background: "linear-gradient(transparent, #000 85%)", pointerEvents: "none", zIndex: 5 }} aria-hidden="true" />
+
+      {/* Barra inferior — una cápsula .glass con filtro+reloj, una cápsula .glass.plus con "+" */}
+      <div className="bar" style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", width: "min(440px, 100%)", bottom: "calc(16px + env(safe-area-inset-bottom, 0px))", display: "flex", justifyContent: "space-between", padding: "0 16px", zIndex: 6, pointerEvents: "none" }}>
+        <div className="glass pair" style={{ pointerEvents: "auto", display: "flex", alignItems: "center", justifyContent: "center", gap: "18px", height: "44px", borderRadius: "22px", background: "rgba(30,30,30,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.14)", padding: "0 20px" }}>
+          <button type="button" onClick={() => setFilterOpen(true)} aria-label="Filtrar tareas" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><Filter size={18} strokeWidth={1.5} className="text-white" /></button>
+          <button type="button" onClick={jumpToNextUp} aria-label="Saltar a la siguiente tarea" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><Clock size={18} strokeWidth={1.5} className="text-white" /></button>
         </div>
-        {/* Derecha: botón "+" individual flotante */}
-        <button type="button" onClick={openAdd} aria-label="Añadir tarea" className="tb-plus-pulse flex h-12 w-12 items-center justify-center rounded-full bg-white text-black transition-transform active:scale-95" style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.4)" }}><Plus size={24} strokeWidth={2.5} /></button>
+        <button type="button" onClick={openAdd} aria-label="Añadir tarea" className="glass plus" style={{ pointerEvents: "auto", display: "flex", alignItems: "center", justifyContentContent: "center", height: "44px", width: "64px", borderRadius: "22px", background: "rgba(30,30,30,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.14)", cursor: "pointer" }}><Plus size={18} strokeWidth={1.5} className="text-white" /></button>
       </div>
 
       {/* Add / Edit sheet */}
@@ -1696,7 +1676,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
                 {PRIORITIES.map((p) => {
                   const sel = draftPriority === p.id;
                   return (
-                    <button key={p.id} type="button" onClick={() => setDraftPriority(p.id)} className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[13px] font-bold transition-colors ${sel ? "text-[#0b0b0c]" : "text-white/70 hover:bg-white/10"}`} style={sel ? { background: p.color } : { background: "rgba(255,255,255,0.05)" }}>
+                    <button key={p.id} type="button" onClick={() => setDraftPriority(p.id)} className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[13px] font-bold transition-colors ${sel ? "text-[#000000]" : "text-white/70 hover:bg-white/10"}`} style={sel ? { background: p.color } : { background: "rgba(255,255,255,0.05)" }}>
                       {p.label} · {p.name}
                     </button>
                   );
@@ -1709,7 +1689,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
                 {RECURRENCE.map((r) => {
                   const sel = draftRecurrence === r.id;
                   return (
-                    <button key={r.id} type="button" onClick={() => setDraftRecurrence(r.id)} className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[13px] font-bold transition-colors ${sel ? "text-[#0b0b0c]" : "text-white/70 hover:bg-white/10"}`} style={sel ? { background: r.color } : { background: "rgba(255,255,255,0.05)" }}>
+                    <button key={r.id} type="button" onClick={() => setDraftRecurrence(r.id)} className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[13px] font-bold transition-colors ${sel ? "text-[#000000]" : "text-white/70 hover:bg-white/10"}`} style={sel ? { background: r.color } : { background: "rgba(255,255,255,0.05)" }}>
                       <Repeat size={11} /> {r.label}
                     </button>
                   );
@@ -1721,7 +1701,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
             {editingId && (
               <button type="button" onClick={() => { const t = taskList.find((x) => x.id === editingId); if (t) handleEliminar(t); setAddOpen(false); setEditingId(null); }} aria-label="Eliminar esta tarea" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#ff4fa3]/40 bg-[#ff4fa3]/15 text-[#ff4fa3] transition-colors hover:bg-[#ff4fa3]/30"><Trash2 size={18} /></button>
             )}
-            <button type="button" onClick={handleSave} className="flex-1 rounded-full bg-[#ffe94a] py-3 text-center text-[15px] font-bold text-[#0b0b0c] transition-transform active:scale-[0.98]">{editingId ? "Guardar cambios" : "Añadir al tablero de hoy"}</button>
+            <button type="button" onClick={handleSave} className="flex-1 rounded-full bg-[#ffe94a] py-3 text-center text-[15px] font-bold text-[#000000] transition-transform active:scale-[0.98]">{editingId ? "Guardar cambios" : "Añadir al tablero de hoy"}</button>
           </div>
         </SheetContent>
       </Sheet>
@@ -1765,7 +1745,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
             <div className="mt-1">
               <span className="mb-1.5 block text-[12px] font-medium text-white/60">Filtrar por etiqueta</span>
               <div className="flex flex-wrap gap-1.5">
-                <button type="button" onClick={() => setActiveTag("all")} className={`rounded-full px-3 py-1 text-[13px] transition-colors ${activeTag === "all" ? "bg-white text-[#0b0b0c]" : "bg-white/5 text-white/70 hover:bg-white/10"}`}>Todas las etiquetas</button>
+                <button type="button" onClick={() => setActiveTag("all")} className={`rounded-full px-3 py-1 text-[13px] transition-colors ${activeTag === "all" ? "bg-white text-[#000000]" : "bg-white/5 text-white/70 hover:bg-white/10"}`}>Todas las etiquetas</button>
                 {TAGS.map((t) => {
                   const Icon = t.icon;
                   const sel = activeTag === t.id;
@@ -1801,7 +1781,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="border-white/15 bg-transparent text-white/70 hover:bg-white/10 hover:text-white">Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={resetDemo} className="bg-[#ffe94a] text-[#0b0b0c] hover:bg-[#ffe94a]/90">Reiniciar</AlertDialogAction>
+            <AlertDialogAction onClick={resetDemo} className="bg-[#ffe94a] text-[#000000] hover:bg-[#ffe94a]/90">Reiniciar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -1864,7 +1844,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
             ))}
           </div>
           <AlertDialogFooter>
-            <AlertDialogAction className="bg-[#ffe94a] text-[#0b0b0c] hover:bg-[#ffe94a]/90" onClick={() => setShortcutsOpen(false)}>Entendido</AlertDialogAction>
+            <AlertDialogAction className="bg-[#ffe94a] text-[#000000] hover:bg-[#ffe94a]/90" onClick={() => setShortcutsOpen(false)}>Entendido</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -2083,7 +2063,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
             <button
               type="button"
               onClick={saveProfile}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#ffe94a] py-3 text-center text-[15px] font-bold text-[#0b0b0c] transition-transform active:scale-[0.98]"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#ffe94a] py-3 text-center text-[15px] font-bold text-[#000000] transition-transform active:scale-[0.98]"
             >
               <Save size={16} /> Guardar perfil
             </button>
