@@ -650,15 +650,7 @@ function StickyNote({
         transform: `rotate(${CARD_ROTATIONS[index % 6]}deg)`,
       }}
     >
-      <button
-        type="button"
-        onClick={lp.onClick}
-        onPointerDown={lp.onPointerDown}
-        onPointerMove={lp.onPointerMove}
-        onPointerUp={lp.onPointerUp}
-        onPointerCancel={lp.onPointerCancel}
-        onContextMenu={lp.onContextMenu}
-        aria-label={isDone ? `Marcar «${task.title}» como no hecha` : `Marcar «${task.title}» como hecha`}
+      <div
         className="paper"
         style={{
           padding: "16px 20px",
@@ -677,21 +669,35 @@ function StickyNote({
           opacity: 1,
         }}
       >
-        {/* emoji float:left */}
-        <span style={{ float: "left", fontSize: "30px", lineHeight: "1", margin: "0 8px 2px 0" }}>{task.emoji}</span>
-        {/* título: margin 0 0 10px, font-weight 400, Patrick Hand 15px, line-height 1.3 */}
-        <h3 style={{ margin: "0 0 10px", fontWeight: 400, fontSize: "15px", lineHeight: "1.3", wordBreak: "break-word", textDecoration: isDone ? "line-through" : "none" }}>{task.title}</h3>
-        {/* fila de pills: clear both, flex nowrap */}
-        <div style={{ clear: "both", display: "flex", alignItems: "center", gap: "4px", flexWrap: "nowrap", whiteSpace: "nowrap" }}>
-          <span className="pill" style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "3px 8px", borderRadius: "99px", background: pillBg, fontSize: "10.5px" }}>
-            <Clock size={10} strokeWidth={2.5} />{task.startTime} - {task.endTime}
-          </span>
-          {/* punto 4x4 entre pills */}
-          <span style={{ display: "inline-block", width: "4px", height: "4px", borderRadius: "50%", background: dotBg, flexShrink: 0 }} />
-          <span className="pill" style={{ display: "inline-flex", alignItems: "center", padding: "3px 8px", borderRadius: "99px", background: pillBg, fontSize: "10.5px" }}>en {task.duration}min</span>
-        </div>
+        {/* Cuerpo interactivo: emoji, título, pills — abre editor al click, menú al long-press */}
+        <button
+          type="button"
+          onClick={lp.onClick}
+          onPointerDown={lp.onPointerDown}
+          onPointerMove={lp.onPointerMove}
+          onPointerUp={lp.onPointerUp}
+          onPointerCancel={lp.onPointerCancel}
+          onContextMenu={lp.onContextMenu}
+          aria-label={isDone ? `Marcar «${task.title}» como no hecha` : `Marcar «${task.title}» como hecha`}
+          className="tb-body"
+          style={{ width: "100%", background: "none", border: "0", padding: "0", margin: "0", textAlign: "left", color: "inherit", font: "inherit", cursor: "pointer", display: "block" }}
+        >
+          {/* emoji float:left */}
+          <span style={{ float: "left", fontSize: "30px", lineHeight: "1", margin: "0 8px 2px 0" }}>{task.emoji}</span>
+          {/* título: margin 0 0 10px, font-weight 400, Patrick Hand 15px, line-height 1.3 */}
+          <h3 style={{ margin: "0 0 10px", fontWeight: 400, fontSize: "15px", lineHeight: "1.3", wordBreak: "break-word", textDecoration: isDone ? "line-through" : "none" }}>{task.title}</h3>
+          {/* fila de pills: clear both, flex nowrap */}
+          <div style={{ clear: "both", display: "flex", alignItems: "center", gap: "4px", flexWrap: "nowrap", whiteSpace: "nowrap" }}>
+            <span className="pill" style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "3px 8px", borderRadius: "99px", background: pillBg, fontSize: "10.5px" }}>
+              <Clock size={10} strokeWidth={2.5} />{task.startTime} - {task.endTime}
+            </span>
+            {/* punto 4x4 entre pills */}
+            <span style={{ display: "inline-block", width: "4px", height: "4px", borderRadius: "50%", background: dotBg, flexShrink: 0 }} />
+            <span className="pill" style={{ display: "inline-flex", alignItems: "center", padding: "3px 8px", borderRadius: "99px", background: pillBg, fontSize: "10.5px" }}>en {task.duration}min</span>
+          </div>
+        </button>
 
-        {/* Checklist — solo si hay subtasks */}
+        {/* Checklist — hermano de .tb-body, no adentro */}
         {task.subtasks && task.subtasks.length > 0 && (
           <div style={{ marginTop: "8px", padding: "8px 10px", borderRadius: "10px", background: "rgba(0,0,0,0.16)" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
@@ -727,7 +733,7 @@ function StickyNote({
             )}
           </div>
         )}
-      </button>
+      </div>
       {/* Doodles — hijos del wrapper .card, hermanos de .paper (NUNCA dentro del clip-path) */}
       {index === 1 && (
         <svg className="doodle butterfly" viewBox="0 0 100 100" fill="none" style={{ position: "absolute", pointerEvents: "none", zIndex: 4, opacity: 1, width: "66px", bottom: "calc(100% - 6px)", right: "20%" }} aria-hidden="true">
@@ -1508,8 +1514,8 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
         .tb-note-btn:hover { transform: rotate(0deg) translateY(-3px) !important; }
         .tb-note-btn:active { transform: rotate(0deg) scale(0.98) !important; }
 
-        /* focus-visible en el botón .paper para accesibilidad */
-        .paper:focus-visible { outline: 2px solid #fff !important; outline-offset: 2px; }
+        /* focus-visible en el botón .tb-body para accesibilidad */
+        .tb-body:focus-visible { outline: 2px solid #fff !important; outline-offset: 2px; }
 
         /* Botón redondo de opciones — animación pop + hover/active + focus-visible */
         @keyframes tb-pop { 0% { transform: scale(0.4); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
