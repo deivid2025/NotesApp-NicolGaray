@@ -1501,7 +1501,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
           </p>
 
           {/* Botón azul: Gochi Hand 20px */}
-          <div className="mt-6 flex justify-center">
+          <div className="mt-6 mb-[26px] flex justify-center">
             <div className="px-5 py-1.5" style={{ background: "#0EA5E9", transform: "skewX(-12deg)" }}>
               <span className="text-white" style={{ fontFamily: "var(--font-gochi-hand), cursive", fontSize: "20px", display: "inline-block", transform: "skewX(12deg)" }}>What's on deck today</span>
             </div>
