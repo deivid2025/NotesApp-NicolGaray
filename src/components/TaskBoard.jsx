@@ -690,6 +690,43 @@ function StickyNote({
           <span style={{ display: "inline-block", width: "4px", height: "4px", borderRadius: "50%", background: dotBg, flexShrink: 0 }} />
           <span className="pill" style={{ display: "inline-flex", alignItems: "center", padding: "3px 8px", borderRadius: "99px", background: pillBg, fontSize: "10.5px" }}>en {task.duration}min</span>
         </div>
+
+        {/* Checklist — solo si hay subtasks */}
+        {task.subtasks && task.subtasks.length > 0 && (
+          <div style={{ marginTop: "8px", padding: "8px 10px", borderRadius: "10px", background: "rgba(0,0,0,0.16)" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
+              <span style={{ fontSize: "9px", letterSpacing: "0.08em", opacity: 0.7, textTransform: "uppercase", color: textColor }}>Checklist</span>
+              <span style={{ fontSize: "9px", opacity: 0.7, color: textColor }}>{task.subtasks.filter(s => s.done).length}/{task.subtasks.length}</span>
+            </div>
+            {/* barra de progreso */}
+            <div style={{ height: "3px", borderRadius: "999px", background: "rgba(0,0,0,0.18)", marginBottom: "6px", overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${(task.subtasks.filter(s => s.done).length / task.subtasks.length) * 100}%`, background: textColor, borderRadius: "999px", transition: "width 0.3s ease" }} />
+            </div>
+            {/* items (hasta 5) */}
+            {task.subtasks.slice(0, 5).map((s) => (
+              <div key={s.id} style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
+                <button
+                  type="button"
+                  role="checkbox"
+                  aria-checked={s.done}
+                  onClick={(e) => { e.stopPropagation(); onToggleSubtask(task.id, s.id); }}
+                  style={{ width: "24px", height: "24px", display: "flex", alignItems: "center", justifyContent: "center", border: "none", background: "transparent", cursor: "pointer", padding: "0", flexShrink: 0 }}
+                >
+                  <span style={{ width: "14px", height: "14px", borderRadius: "3px", border: `1.5px solid ${textColor}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {s.done && <Check size={10} strokeWidth={3} style={{ color: textColor }} />}
+                  </span>
+                </button>
+                <span style={{ fontSize: "12px", color: textColor, textDecoration: s.done ? "line-through" : "none", opacity: s.done ? 0.55 : 1, wordBreak: "break-word", lineHeight: "1.3" }}>{s.text}</span>
+              </div>
+            ))}
+            {/* +N más */}
+            {task.subtasks.length > 5 && (
+              <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(task); }} style={{ fontSize: "11px", color: textColor, opacity: 0.6, background: "none", border: "none", cursor: "pointer", padding: "2px 0" }}>
+                +{task.subtasks.length - 5} más
+              </button>
+            )}
+          </div>
+        )}
       </button>
       {/* Doodles — hijos del wrapper .card, hermanos de .paper (NUNCA dentro del clip-path) */}
       {index === 1 && (
@@ -840,6 +877,8 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
   const [draftTag, setDraftTag] = useState("work");
   const [draftPriority, setDraftPriority] = useState(2);
   const [draftRecurrence, setDraftRecurrence] = useState("none");
+  const [draftSubtasks, setDraftSubtasks] = useState([]);
+  const [draftSubtaskText, setDraftSubtaskText] = useState("");
 
   // hydrate flag — evita que el persist effect sobreescriba localStorage antes de hidratar
   const hydratedRef = useRef(false);
@@ -1079,12 +1118,14 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
   function openAdd() {
     setEditingId(null);
     setDraftTitle(""); setDraftEmoji(EMOJI_CHOICES[0]); setDraftStart("9am"); setDraftEnd("9:30am"); setDraftDuration(30); setDraftTag("work"); setDraftPriority(2); setDraftRecurrence("none");
+    setDraftSubtasks([]); setDraftSubtaskText("");
     setAddOpen(true);
   }
 
   function openEdit(task) {
     setEditingId(task.id);
     setDraftTitle(task.title); setDraftEmoji(task.emoji); setDraftStart(task.startTime); setDraftEnd(task.endTime); setDraftDuration(task.duration); setDraftTag(task.tag || "work"); setDraftPriority(task.priority || 2); setDraftRecurrence(task.recurrence || "none");
+    setDraftSubtasks(task.subtasks ? task.subtasks.map(s => ({ ...s })) : []); setDraftSubtaskText("");
     setAddOpen(true);
   }
 
@@ -1171,13 +1212,13 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
     if (!trimmed) { toast({ title: "Espera ✋", description: "Dale un título a tu tarea." }); return; }
     if (editingId) {
       pushUndo(`Editar «${trimmed}»`);
-      setTaskList((prev) => prev.map((t) => t.id === editingId ? { ...t, title: trimmed, emoji: draftEmoji, startTime: draftStart.trim() || "9am", endTime: draftEnd.trim() || "9:30am", duration: Number(draftDuration) || 30, tag: draftTag, priority: draftPriority, recurrence: draftRecurrence } : t));
+      setTaskList((prev) => prev.map((t) => t.id === editingId ? { ...t, title: trimmed, emoji: draftEmoji, startTime: draftStart.trim() || "9am", endTime: draftEnd.trim() || "9:30am", duration: Number(draftDuration) || 30, tag: draftTag, priority: draftPriority, recurrence: draftRecurrence, subtasks: draftSubtasks } : t));
       toast({ title: "Guardado ✏️", description: `«${trimmed}» actualizada.` }); showBleachDialogue("save");
     } else {
       pushUndo(`Añadir «${trimmed}»`);
       const color = NEON_COLORS[taskList.length % NEON_COLORS.length];
       const rotation = Math.round(Math.random() * 6 - 3);
-      setTaskList((prev) => [...prev, { id: Date.now(), title: trimmed, emoji: draftEmoji, color, startTime: draftStart.trim() || "9am", endTime: draftEnd.trim() || "9:30am", duration: Number(draftDuration) || 30, rotation, tag: draftTag, priority: draftPriority, recurrence: draftRecurrence, subtasks: [] }]);
+      setTaskList((prev) => [...prev, { id: Date.now(), title: trimmed, emoji: draftEmoji, color, startTime: draftStart.trim() || "9am", endTime: draftEnd.trim() || "9:30am", duration: Number(draftDuration) || 30, rotation, tag: draftTag, priority: draftPriority, recurrence: draftRecurrence, subtasks: draftSubtasks }]);
       toast({ title: "Tarea añadida ✨", description: `«${trimmed}» en el tablero.` }); showBleachDialogue("add"); if (taskList.length + 1 >= 10) unlockAchievement("archer");
     }
     setAddOpen(false); setEditingId(null);
@@ -1710,6 +1751,30 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
                 {DURATION_CHOICES.map((d) => (
                   <button key={d} type="button" onClick={() => setDraftDuration(d)} className={`rounded-full px-3 py-1 text-[13px] transition-colors ${Number(draftDuration) === d ? "bg-[#2563eb] text-white" : "bg-white/5 text-white/70 hover:bg-white/10"}`}>{d}m</button>
                 ))}
+              </div>
+            </div>
+            {/* Checklist */}
+            <div>
+              <div className="mb-1 flex items-center justify-between">
+                <span className="block text-[12px] font-medium text-white/60">Checklist</span>
+                <span className="text-[11px] text-white/40">{draftSubtasks.filter(s => s.done).length}/{draftSubtasks.length}</span>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                {draftSubtasks.map((s, si) => (
+                  <div key={s.id} className="flex items-center gap-2">
+                    <button type="button" onClick={() => setDraftSubtasks(prev => prev.map((x, xi) => xi === si ? { ...x, done: !x.done } : x))} className="flex h-6 w-6 shrink-0 items-center justify-center rounded border" style={{ borderColor: s.done ? "#39ff14" : "rgba(255,255,255,0.25)", background: s.done ? "rgba(57,255,20,0.15)" : "transparent" }}>
+                      {s.done && <Check size={12} className="text-[#39ff14]" />}
+                    </button>
+                    <input value={s.text} onChange={(e) => setDraftSubtasks(prev => prev.map((x, xi) => xi === si ? { ...x, text: e.target.value } : x))} className="flex-1 rounded border border-white/10 bg-white/5 px-2 py-1 text-[13px] text-white" />
+                    <button type="button" onClick={() => setDraftSubtasks(prev => prev.filter((_, xi) => xi !== si))} className="flex h-6 w-6 shrink-0 items-center justify-center rounded text-white/40 hover:text-[#ff4fa3]"><X size={14} /></button>
+                  </div>
+                ))}
+                {draftSubtasks.length < 20 && (
+                  <div className="flex items-center gap-2">
+                    <input value={draftSubtaskText} onChange={(e) => setDraftSubtaskText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); const t = draftSubtaskText.trim(); if (t) { setDraftSubtasks(prev => [...prev, { id: `s${Date.now()}`, text: t, done: false }]); setDraftSubtaskText(""); } } }} placeholder="Agregar un paso…" className="flex-1 rounded border border-white/10 bg-white/5 px-2 py-1 text-[13px] text-white placeholder:text-white/30" />
+                    <button type="button" onClick={() => { const t = draftSubtaskText.trim(); if (t) { setDraftSubtasks(prev => [...prev, { id: `s${Date.now()}`, text: t, done: false }]); setDraftSubtaskText(""); } }} className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-white/10 text-white hover:bg-white/20"><Plus size={14} /></button>
+                  </div>
+                )}
               </div>
             </div>
             <div>
