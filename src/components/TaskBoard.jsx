@@ -186,8 +186,11 @@ const STATUS_META = {
 };
 
 /* Curved connector paths (viewBox 0 0 390 56) */
-const PATH_LEFT_TO_RIGHT = "M 74 0 C 74 30, 270 26, 270 56";
-const PATH_RIGHT_TO_LEFT = "M 316 0 C 316 30, 120 26, 120 56";
+/* Flechas: arcos que van del borde inferior de card N al borde superior de card N+1.
+   Empiezan en y=8 (8px debajo del borde inferior) y terminan en y=48 (8px antes del borde superior).
+   viewBox 0 0 390 56. NO tocan las cards. */
+const PATH_LEFT_TO_RIGHT = "M 74 8 C 74 28, 270 28, 270 48";
+const PATH_RIGHT_TO_LEFT = "M 316 8 C 316 28, 120 28, 120 48";
 
 function loadStored() {
   if (typeof window === "undefined") return null;
@@ -398,20 +401,17 @@ function DoodleFrame() {
 
 function ConnectorArrow({ index, leftToRight, animate }) {
   const path = leftToRight ? PATH_LEFT_TO_RIGHT : PATH_RIGHT_TO_LEFT;
-  // Punta en V abierta (dos trazos cortos) al final de la curva
+  // Punta en V abierta (dos trazos cortos) al final de la curva, apuntando hacia abajo
   const tipX = leftToRight ? 270 : 120;
-  const arrowHead = `M ${tipX - 10} 48 L ${tipX} 56 L ${tipX + 10} 48`;
-  const color = "#ff6b7a";
-  const opacity = animate ? "1" : "0.9";
+  const arrowHead = `M ${tipX - 9} 42 L ${tipX} 50 L ${tipX + 9} 42`;
+  const color = "#C0392B"; // rojo ladrillo como la referencia
+  const opacity = animate ? "0.9" : "0.8";
   return (
     <svg className="pointer-events-none absolute left-0 right-0 top-full h-16 w-full overflow-visible" viewBox="0 0 390 56" fill="none" aria-hidden="true" style={{ zIndex: 5 }}>
-      {/* glow blanco detrás para que se vea sobre cualquier fondo */}
-      <path d={path} stroke="#fff" strokeOpacity="0.4" strokeWidth="4" strokeLinecap="round" fill="none" />
-      {/* trazo continuo curvo rosa, más grueso */}
-      <path d={path} stroke={color} strokeOpacity={opacity} strokeWidth="3" strokeLinecap="round" fill="none" />
-      {/* punta en V abierta con glow */}
-      <path d={arrowHead} stroke="#fff" strokeOpacity="0.4" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <path d={arrowHead} stroke={color} strokeOpacity={opacity} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* trazo continuo curvo, fino (2px) */}
+      <path d={path} stroke={color} strokeOpacity={opacity} strokeWidth="2" strokeLinecap="round" fill="none" />
+      {/* punta en V abierta (dos trazos cortos) */}
+      <path d={arrowHead} stroke={color} strokeOpacity={opacity} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
     </svg>
   );
 }
@@ -1589,7 +1589,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
                     <span className="text-[11px] tb-themed-muted">{group.tasks.length}</span>
                   </div>
                 )}
-              <div id={`task-${task.id}`} className="relative mb-24 last:mb-0">
+              <div id={`task-${task.id}`} className="relative mb-20">
                 <div className={`flex ${isLeft ? "justify-start" : "justify-end"}`}>
                   <div className="w-[65%]">
                     <StickyNote
