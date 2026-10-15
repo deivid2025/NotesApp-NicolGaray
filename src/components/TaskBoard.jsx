@@ -400,15 +400,18 @@ function ConnectorArrow({ index, leftToRight, animate }) {
   const path = leftToRight ? PATH_LEFT_TO_RIGHT : PATH_RIGHT_TO_LEFT;
   // Punta en V abierta (dos trazos cortos) al final de la curva
   const tipX = leftToRight ? 270 : 120;
-  const arrowHead = `M ${tipX - 8} 50 L ${tipX} 56 L ${tipX + 8} 50`;
+  const arrowHead = `M ${tipX - 10} 48 L ${tipX} 56 L ${tipX + 10} 48`;
   const color = "#ff6b7a";
-  const opacity = animate ? "0.95" : "0.8";
+  const opacity = animate ? "1" : "0.9";
   return (
-    <svg className="pointer-events-none absolute left-0 right-0 top-full h-14 w-full overflow-visible" viewBox="0 0 390 56" fill="none" aria-hidden="true">
-      {/* trazo continuo curvo, NO punteado */}
-      <path d={path} stroke={color} strokeOpacity={opacity} strokeWidth="2.2" strokeLinecap="round" fill="none" />
-      {/* punta en V abierta (dos trazos cortos) */}
-      <path d={arrowHead} stroke={color} strokeOpacity={opacity} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    <svg className="pointer-events-none absolute left-0 right-0 top-full h-16 w-full overflow-visible" viewBox="0 0 390 56" fill="none" aria-hidden="true" style={{ zIndex: 5 }}>
+      {/* glow blanco detrás para que se vea sobre cualquier fondo */}
+      <path d={path} stroke="#fff" strokeOpacity="0.4" strokeWidth="4" strokeLinecap="round" fill="none" />
+      {/* trazo continuo curvo rosa, más grueso */}
+      <path d={path} stroke={color} strokeOpacity={opacity} strokeWidth="3" strokeLinecap="round" fill="none" />
+      {/* punta en V abierta con glow */}
+      <path d={arrowHead} stroke="#fff" strokeOpacity="0.4" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <path d={arrowHead} stroke={color} strokeOpacity={opacity} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
     </svg>
   );
 }
@@ -1586,9 +1589,9 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
                     <span className="text-[11px] tb-themed-muted">{group.tasks.length}</span>
                   </div>
                 )}
-              <div id={`task-${task.id}`} className="relative mb-16 last:mb-0">
+              <div id={`task-${task.id}`} className="relative mb-24 last:mb-0">
                 <div className={`flex ${isLeft ? "justify-start" : "justify-end"}`}>
-                  <div className="w-[75%]">
+                  <div className="w-[65%]">
                     <StickyNote
                       task={task}
                       index={i}
