@@ -1,22 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Caveat, Patrick_Hand } from "next/font/google";
+import { Inter, Gochi_Hand, Patrick_Hand } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  weight: ["700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const gochiHand = Gochi_Hand({
+  variable: "--font-gochi-hand",
   subsets: ["latin"],
-});
-
-const caveat = Caveat({
-  variable: "--font-caveat",
-  subsets: ["latin"],
-  weight: ["500", "700"],
+  weight: "400",
 });
 
 const patrickHand = Patrick_Hand({
@@ -56,7 +52,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${caveat.variable} ${patrickHand.variable} antialiased bg-background text-foreground`}
+        className={`${inter.variable} ${gochiHand.variable} ${patrickHand.variable} antialiased bg-background text-foreground`}
       >
         {children}
         <Toaster />

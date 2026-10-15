@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   Filter,
   Clock,
@@ -103,7 +103,23 @@ import { usePushNotifications } from "@/hooks/use-push-notifications";
  *
  * Shape: { id, title, emoji, color, startTime, endTime, duration, rotation }
  */
-const NEON_COLORS = ["#39ff14", "#ffe94a", "#ff4fa3", "#9d4dff", "#ff8a3d"];
+const NEON_COLORS = ["#6BE05A", "#FAFF6B", "#FF0A8C", "#9333FF", "#FFA8E6", "#FF8A3D"];
+
+/* Polígonos clip-path por índice (% 6) — formas orgánicas recortadas a mano */
+const PAPER_SHAPES = [
+  "polygon(1% 4%,20% 1%,48% 3%,78% 0%,99% 3%,97% 30%,99% 62%,96% 96%,70% 99%,38% 96%,10% 100%,3% 70%,0% 36%)",
+  "polygon(0% 2%,30% 4%,62% 0%,100% 5%,98% 40%,100% 74%,95% 100%,62% 97%,30% 100%,4% 96%,2% 60%,0% 30%)",
+  "polygon(3% 0%,36% 3%,70% 1%,99% 4%,100% 36%,96% 66%,99% 98%,64% 100%,32% 97%,1% 99%,4% 62%,1% 28%)",
+  "polygon(1% 5%,28% 0%,58% 4%,98% 1%,96% 34%,100% 68%,97% 97%,66% 100%,34% 96%,0% 98%,3% 64%,0% 32%)",
+  "polygon(0% 0%,34% 4%,66% 1%,100% 6%,97% 38%,99% 70%,94% 99%,60% 96%,28% 100%,3% 97%,1% 62%,3% 30%)",
+  "polygon(2% 3%,32% 0%,64% 5%,99% 2%,99% 34%,96% 68%,100% 100%,66% 96%,34% 99%,0% 95%,3% 60%,0% 28%)",
+];
+
+/* Rotación por índice en grados */
+const CARD_ROTATIONS = [-1.2, 1, -0.8, 1.4, -1.5, 0.9];
+
+/* Colores de card oscuros (texto blanco) vs claros (texto negro) */
+const DARK_CARDS = new Set(["#FF0A8C", "#9333FF"]);
 
 const TAGS = [
   { id: "work",      label: "Trabajo",      icon: Briefcase,   color: "#3b82f6" },
@@ -143,7 +159,7 @@ const MOCK_TASKS = [
     { id: "s7", text: "Llamada a la acción final", done: false },
   ] },
   { id: 5, title: "Regar las plantas y ordenar el escritorio", emoji: "🌿", color: NEON_COLORS[4], startTime: "3:15pm", endTime: "3:30pm", duration: 15, rotation: -3, tag: "errands", priority: 3, recurrence: "weekly", subtasks: [] },
-  { id: 6, title: "Paseo nocturno + podcast junto al río", emoji: "🎧", color: NEON_COLORS[0], startTime: "6pm", endTime: "6:30pm", duration: 30, rotation: 1, tag: "health", priority: 2, recurrence: "daily", subtasks: [] },
+  { id: 6, title: "Paseo nocturno + podcast junto al río", emoji: "🎧", color: NEON_COLORS[5], startTime: "6pm", endTime: "6:30pm", duration: 30, rotation: 1, tag: "health", priority: 2, recurrence: "daily", subtasks: [] },
 ];
 
 const EMOJI_CHOICES = [
@@ -185,12 +201,75 @@ const STATUS_META = {
   later:    { label: "LATER",   color: "#9d4dff", glow: null },
 };
 
-/* Curved connector paths (viewBox 0 0 390 56) */
-/* Flechas: arcos que van del borde inferior de card N al borde superior de card N+1.
-   Empiezan en y=8 (8px debajo del borde inferior) y terminan en y=48 (8px antes del borde superior).
-   viewBox 0 0 390 56. NO tocan las cards. */
-const PATH_LEFT_TO_RIGHT = "M 74 8 C 74 28, 270 28, 270 48";
-const PATH_RIGHT_TO_LEFT = "M 316 8 C 316 28, 120 28, 120 48";
+/* ArrowLayer — un único SVG con un solo <path> que dibuja todas las flechas.
+   Mide las posiciones reales de las .card con getBoundingClientRect. */
+function ArrowLayer({ containerRef }) {
+  const svgRef = useRef(null);
+  const pathRef = useRef(null);
+
+  const draw = useCallback(() => {
+    const list = containerRef.current;
+    const svg = svgRef.current;
+    const path = pathRef.current;
+    if (!list || !svg || !path) return;
+    const cards = list.querySelectorAll(".card");
+    if (cards.length < 2) { path.setAttribute("d", ""); return; }
+
+    var L = list.getBoundingClientRect(), d = "";
+    function R(el) {
+      var r = el.getBoundingClientRect();
+      return {
+        l: r.left - L.left, r: r.right - L.left,
+        t: r.top - L.top, b: r.bottom - L.top,
+        c: (r.left + r.right) / 2 - L.left,
+      };
+    }
+    for (var i = 0; i < cards.length - 1; i++) {
+      var A = R(cards[i]), B = R(cards[i + 1]), dir = B.c > A.c ? 1 : -1;
+      var Ey = B.t - 22, Sy = Math.max(Ey - 34, A.t + 0.2 * (A.b - A.t));
+      var Sx = dir > 0 ? A.r + 14 : A.l - 14, Ex = Sx + dir * 52;
+      d += "M" + Sx + " " + Sy + " C" + (Sx + dir * 30) + " " + Sy + " " +
+        Ex + " " + (Ey - 28) + " " + Ex + " " + Ey +
+        " M" + (Ex - 9) + " " + (Ey - 13) + " L" + Ex + " " + Ey +
+        " L" + (Ex + 9) + " " + (Ey - 13);
+    }
+    svg.setAttribute("viewBox", "0 0 " + L.width + " " + L.height);
+    path.setAttribute("d", d);
+  }, [containerRef]);
+
+  useLayoutEffect(() => {
+    draw();
+    const onResize = () => draw();
+    window.addEventListener("resize", onResize);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => draw());
+    const ro = new ResizeObserver(() => draw());
+    if (containerRef.current) ro.observe(containerRef.current);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      ro.disconnect();
+    };
+  }, [draw, containerRef]);
+
+  return (
+    <svg
+      ref={svgRef}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 0, pointerEvents: "none", overflow: "visible" }}
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        ref={pathRef}
+        d=""
+        fill="none"
+        stroke="#e2607c"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.9"
+      />
+    </svg>
+  );
+}
 
 function loadStored() {
   if (typeof window === "undefined") return null;
@@ -399,23 +478,6 @@ function DoodleFrame() {
   );
 }
 
-function ConnectorArrow({ index, leftToRight, animate }) {
-  const path = leftToRight ? PATH_LEFT_TO_RIGHT : PATH_RIGHT_TO_LEFT;
-  // Punta en V abierta — dos trazos rectos nítidos formando una V clara, apuntando hacia abajo
-  const tipX = leftToRight ? 270 : 120;
-  const arrowHead = `M ${tipX - 11} 40 L ${tipX} 50 L ${tipX + 11} 40`;
-  const color = "#8B3A3A"; // rojo óxido como la referencia
-  const opacity = animate ? "0.95" : "0.85";
-  return (
-    <svg className="pointer-events-none absolute left-0 right-0 top-full h-16 w-full overflow-visible" viewBox="0 0 390 56" fill="none" aria-hidden="true" style={{ zIndex: 5 }}>
-      {/* trazo continuo curvo, fino (1.5px) */}
-      <path d={path} stroke={color} strokeOpacity={opacity} strokeWidth="1.5" strokeLinecap="round" fill="none" />
-      {/* punta en V abierta — angular (sin round cap), dos trazos rectos en V */}
-      <path d={arrowHead} stroke={color} strokeOpacity={opacity} strokeWidth="1.5" strokeLinecap="butt" strokeLinejoin="miter" fill="none" />
-    </svg>
-  );
-}
-
 function ProgressRing({ done, total, size = 40 }) {
   const stroke = 4;
   const r = (size - stroke) / 2;
@@ -598,11 +660,26 @@ function StickyNote({
   const toggle = useCallback(() => onToggle(task), [onToggle, task]);
   const lp = useLongPress(openMenu, toggle);
 
-  const statusMeta = STATUS_META[status] || STATUS_META.later;
-  const ringClass = !isDone && statusMeta.glow ? statusMeta.glow : "";
+  const isDark = DARK_CARDS.has(task.color);
+  const textColor = isDark ? "#fff" : "#111";
+  const pillBg = task.color === "#FAFF6B" ? "#E6C200" : "rgba(255,255,255,0.28)";
+  const dotBg = task.color === "#FAFF6B" ? "#E6C200" : "rgba(255,255,255,0.4)";
+  // cards 2,4,6 (índices 1,3,5) van a la derecha
+  const isRight = index % 2 === 1;
 
   return (
-    <div className="tb-card-anim group" style={{ animationDelay: `${Math.min(index, 8) * 60}ms` }}>
+    <div
+      className="tb-card-anim group card"
+      data-card-index={index}
+      style={{
+        position: "relative",
+        zIndex: 1,
+        width: "48%",
+        marginTop: index === 0 ? 0 : "34px",
+        marginLeft: isRight ? "auto" : 0,
+        transform: `rotate(${CARD_ROTATIONS[index % 6]}deg)`,
+      }}
+    >
       <button
         type="button"
         onClick={lp.onClick}
@@ -612,89 +689,38 @@ function StickyNote({
         onPointerCancel={lp.onPointerCancel}
         onContextMenu={lp.onContextMenu}
         aria-label={isDone ? `Marcar «${task.title}» como no hecha` : `Marcar «${task.title}» como hecha`}
-        className={`tb-note-btn relative block w-full p-[14px] text-left text-[#111] ${ringClass} ${isNextUp ? "tb-nextup" : ""}`}
+        className="paper"
         style={{
+          padding: "16px 20px",
+          minHeight: "84px",
           background: task.color,
-          transform: `rotate(${task.rotation}deg)`,
-          boxShadow: "4px 5px 0 rgba(0,0,0,0.45)",
+          clipPath: PAPER_SHAPES[index % 6],
+          color: textColor,
           fontFamily: "var(--font-patrick-hand), cursive",
-          opacity: isDone ? 0.55 : 1,
-          touchAction: "manipulation",
-          borderRadius: "255px 15px 225px 15px/15px 225px 15px 255px",
+          display: "block",
+          width: "100%",
+          textAlign: "left",
+          border: "none",
+          borderRadius: 0,
+          boxShadow: "none",
+          filter: "none",
+          opacity: 1,
         }}
       >
-        {/* done stamp */}
-        {isDone && (
-          <span aria-hidden="true" className="tb-stamp pointer-events-none absolute -right-2 top-6 z-[3] select-none" style={{ color: "#0b0b0c", border: "3px double #0b0b0c", borderRadius: "4px", padding: "1px 6px", fontFamily: "var(--font-patrick-hand), cursive", fontWeight: 700, fontSize: "13px", letterSpacing: "1px", transform: "rotate(-8deg)", background: "rgba(255,255,255,0.25)" }}>DONE</span>
-        )}
-
-        {/* content wrapper — lifted above the paper texture (z-[2]) */}
-        <div className="relative z-[2]">
-          {/* emoji + check */}
-          <div className="flex items-start justify-between">
-            <span className="text-2xl leading-none">{task.emoji}</span>
-            <span className={`flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors ${isDone ? "border-[#0b0b0c] bg-[#0b0b0c] text-[#39ff14]" : "border-[#0b0b0c]/40 text-transparent"}`}>
-              <Check size={12} strokeWidth={3.5} />
-            </span>
-          </div>
-
-          {/* title — handwritten negro, sin truncar (envuelve a 2-3 líneas) */}
-          <h3 className="mt-2 min-w-0 text-[16px] font-normal leading-snug" style={{ fontFamily: "var(--font-patrick-hand), cursive", color: "#000", textDecoration: isDone ? "line-through" : "none", textDecorationThickness: "2px", wordBreak: "break-word" }}>{task.title}</h3>
-
-          {/* pills: solo 2 (hora + duración), oscuros translúcidos, texto blanco */}
-          <div className="mt-3 flex min-w-0 flex-wrap gap-1.5">
-            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-medium" style={{ background: "rgba(0,0,0,0.7)", color: "#fff" }}>
-              <Clock size={11} strokeWidth={2.5} />{task.startTime} - {task.endTime}
-            </span>
-            <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[12px] font-medium" style={{ background: "rgba(0,0,0,0.7)", color: "#fff" }}>en {task.duration}min</span>
-          </div>
-
-          {/* subtask checklist + progress */}
-          {task.subtasks && task.subtasks.length > 0 && (
-            <div className="mt-2.5 rounded-md bg-black/15 p-2">
-              <div className="mb-1.5 flex items-center justify-between">
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-[#0b0b0c]/70">
-                  <ListChecks size={11} /> checklist
-                </span>
-                <span className="text-[10px] font-bold text-[#0b0b0c]/60">
-                  {task.subtasks.filter((s) => s.done).length}/{task.subtasks.length}
-                </span>
-              </div>
-              {/* mini progress bar */}
-              <div className="mb-2 h-1 overflow-hidden rounded-full bg-black/20">
-                <div className="h-full rounded-full bg-[#0b0b0c] transition-all" style={{ width: `${(task.subtasks.filter((s) => s.done).length / task.subtasks.length) * 100}%` }} />
-              </div>
-              <div className="flex flex-col gap-1">
-                {task.subtasks.map((s) => (
-                  <div
-                    key={s.id}
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => { e.stopPropagation(); onToggleSubtask(task.id, s.id); }}
-                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); onToggleSubtask(task.id, s.id); } }}
-                    className="flex min-w-0 cursor-pointer items-start gap-1.5 text-left text-[12px] leading-tight text-[#0b0b0c]/85 transition-opacity hover:opacity-80"
-                    style={{ fontFamily: "var(--font-patrick-hand), cursive", fontSize: "13px" }}
-                  >
-                    {s.done ? <CheckSquare size={12} className="mt-0.5 shrink-0 text-[#0b0b0c]" /> : <Square size={12} className="mt-0.5 shrink-0 text-[#0b0b0c]/50" />}
-                    <span style={{ textDecoration: s.done ? "line-through" : "none", opacity: s.done ? 0.55 : 1 }}>{s.text}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+        {/* emoji float:left */}
+        <span style={{ float: "left", fontSize: "30px", lineHeight: "1", margin: "0 8px 2px 0" }}>{task.emoji}</span>
+        {/* título: margin 0 0 10px, font-weight 400, Patrick Hand 15px, line-height 1.3 */}
+        <h3 style={{ margin: "0 0 10px", fontWeight: 400, fontSize: "15px", lineHeight: "1.3", wordBreak: "break-word", textDecoration: isDone ? "line-through" : "none" }}>{task.title}</h3>
+        {/* fila de pills: clear both, flex nowrap */}
+        <div style={{ clear: "both", display: "flex", alignItems: "center", gap: "4px", flexWrap: "nowrap", whiteSpace: "nowrap" }}>
+          <span className="pill" style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "3px 8px", borderRadius: "99px", background: pillBg, fontSize: "10.5px" }}>
+            <Clock size={10} strokeWidth={2.5} />{task.startTime} - {task.endTime}
+          </span>
+          {/* punto 4x4 entre pills */}
+          <span style={{ display: "inline-block", width: "4px", height: "4px", borderRadius: "50%", background: dotBg, flexShrink: 0 }} />
+          <span className="pill" style={{ display: "inline-flex", alignItems: "center", padding: "3px 8px", borderRadius: "99px", background: pillBg, fontSize: "10.5px" }}>en {task.duration}min</span>
         </div>
-
-        {/* "more" affordance — visible on touch too, opens action menu */}
-        <span aria-hidden="true" className="pointer-events-none absolute bottom-1.5 right-2 z-[3] flex h-6 w-6 items-center justify-center rounded-full bg-black/20 text-white/70 opacity-70 transition-opacity group-hover:opacity-100">
-          <MoreHorizontal size={14} />
-        </span>
       </button>
-
-      {/* desktop hover quick actions */}
-      <div className="pointer-events-none absolute -top-3 right-2 flex gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100 focus-within:opacity-100">
-        <button type="button" onClick={(e) => { e.stopPropagation(); onEdit(task); }} aria-label={`Editar «${task.title}»`} className="pointer-events-auto flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-neutral-900/90 text-white/80 backdrop-blur transition-colors hover:bg-[#2563eb] hover:text-white"><Pencil size={13} /></button>
-        <button type="button" onClick={(e) => { e.stopPropagation(); onEliminar(task); }} aria-label={`Eliminar “${task.title}”`} className="pointer-events-auto flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-neutral-900/90 text-white/80 backdrop-blur transition-colors hover:bg-[#ff4fa3] hover:text-white"><Trash2 size={13} /></button>
-      </div>
     </div>
   );
 }
@@ -711,6 +737,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
   const [lastClearedDate, setLastClearedDate] = useState(null);
 
   const [filter, setFilter] = useState("all");
+  const taskListRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTag, setActiveTag] = useState("all");
   const [nextUpId, setNextUpId] = useState(null);
@@ -1456,27 +1483,27 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
           {/* Flor — esquina superior derecha, grande, con cara sonriente, z-index por debajo del texto */}
           <FlowerDoodle className="pointer-events-none absolute right-4 top-8 h-24 w-20 sm:h-28 sm:w-24 z-[1]" />
 
-          {/* Saludo simple: "Hola Deivid" sans bold, sin avatar/emoji */}
-          <h1 className="relative z-[2] text-[34px] font-extrabold leading-none tracking-tight text-white" style={{ letterSpacing: "-0.02em" }}>
+          {/* Saludo: Inter 700, 44px, line-height 1, letter-spacing -0.03em, #fff */}
+          <h1 className="relative z-[2] text-white" style={{ fontFamily: "var(--font-inter), sans-serif", fontSize: "44px", fontWeight: 700, lineHeight: "1", letterSpacing: "-0.03em" }}>
             Hola {firstName}
           </h1>
 
-          {/* Subtítulo handwritten 2 líneas, gris, "X tareas" en blanco bold */}
-          <p className="relative z-[2] mt-2" style={{ fontFamily: "var(--font-caveat), cursive", fontSize: "26px", lineHeight: "1.25", color: "#9ca3af", maxWidth: "70%" }}>
+          {/* Subtítulo: Gochi Hand, 28px, line-height 1.25, #8c8c8c, "X tareas" en #fff */}
+          <p className="relative z-[2] mt-2" style={{ fontFamily: "var(--font-gochi-hand), cursive", fontSize: "28px", lineHeight: "1.25", color: "#8c8c8c", maxWidth: "70%" }}>
             {remaining === 0 ? (
-              <span style={{ color: "#fff", fontWeight: 700 }}>¡Todo listo hoy!</span>
+              <span style={{ color: "#fff" }}>¡Todo listo hoy!</span>
             ) : (
               <>
-                Te quedan <span style={{ color: "#fff", fontWeight: 700 }}>{remaining} tarea{remaining === 1 ? "" : "s"}</span><br />
+                Te quedan <span style={{ color: "#fff" }}>{remaining} tareas</span><br />
                 por completar hoy..
               </>
             )}
           </p>
 
-          {/* Botón azul paralelogramo sesgado, fuente handwritten */}
+          {/* Botón azul: Gochi Hand 20px */}
           <div className="mt-6 flex justify-center">
             <div className="px-5 py-1.5" style={{ background: "#0EA5E9", transform: "skewX(-12deg)" }}>
-              <span className="text-[16px] font-semibold text-white" style={{ fontFamily: "var(--font-caveat), cursive", display: "inline-block", transform: "skewX(12deg)" }}>What's on deck today</span>
+              <span className="text-white" style={{ fontFamily: "var(--font-gochi-hand), cursive", fontSize: "20px", display: "inline-block", transform: "skewX(12deg)" }}>What's on deck today</span>
             </div>
           </div>
 
@@ -1516,8 +1543,9 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
           </p>
         )}
 
-        {/* Task list */}
-        <div className="px-4 pb-36">
+        {/* Task list — contenedor relative con ArrowLayer */}
+        <div className="px-4 pb-36 relative" ref={taskListRef}>
+          <ArrowLayer containerRef={taskListRef} />
           {visibleTasks.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               {!searchQuery && (
@@ -1542,51 +1570,24 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
           )}
 
           {visibleTasks.map((task, i) => {
-            const isLeft = i % 2 === 0;
-            const showArrow = i < visibleTasks.length - 1;
             const isDone = completedIds.has(task.id);
             const isNextUp = nextUpId === task.id;
             const status = taskStatus(task, isDone, now);
-            const realIdx = taskList.findIndex((t) => t.id === task.id);
-            // agenda group header: show before the first task of each group
-            const group = agendaGroups ? agendaGroups.find((g) => g.tasks.some((t) => t.id === task.id)) : null;
-            const showGroupHeader = group && group.tasks[0].id === task.id;
-            const GroupIcon = group?.icon;
             return (
-              <div key={task.id}>
-                {showGroupHeader && (
-                  <div className="mb-4 mt-2 flex items-center gap-2 first:mt-0">
-                    <GroupIcon size={16} style={{ color: group.color }} />
-                    <span className="text-[13px] font-bold tracking-wide tb-themed-muted" style={{ fontFamily: "var(--font-patrick-hand), cursive", fontSize: "17px" }}>{group.label}</span>
-                    <span className="h-px flex-1 bg-white/10" />
-                    <span className="text-[11px] tb-themed-muted">{group.tasks.length}</span>
-                  </div>
-                )}
-              <div id={`task-${task.id}`} className="relative mb-20">
-                <div className={`flex ${isLeft ? "justify-start" : "justify-end"}`}>
-                  <div className="w-[65%]">
-                    <StickyNote
-                      task={task}
-                      index={i}
-                      isDone={isDone}
-                      isNextUp={isNextUp}
-                      status={status}
-                      now={now}
-                      onToggle={toggleComplete}
-                      onEdit={openEdit}
-                      onEliminar={handleEliminar}
-                      onOpenActions={openActions}
-                      onMoveUp={(t) => moveTask(t, -1)}
-                      onMoveDown={(t) => moveTask(t, 1)}
-                      canUp={realIdx > 0}
-                      canDown={realIdx < taskList.length - 1}
-                      onToggleSubtask={toggleSubtask}
-                    />
-                  </div>
-                </div>
-                {showArrow && <ConnectorArrow index={i} leftToRight={isLeft} animate={isNextUp} />}
-              </div>
-              </div>
+              <StickyNote
+                key={task.id}
+                task={task}
+                index={i}
+                isDone={isDone}
+                isNextUp={isNextUp}
+                status={status}
+                now={now}
+                onToggle={toggleComplete}
+                onEdit={openEdit}
+                onEliminar={handleEliminar}
+                onOpenActions={openActions}
+                onToggleSubtask={toggleSubtask}
+              />
             );
           })}
         </div>
