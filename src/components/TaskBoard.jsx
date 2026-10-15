@@ -626,8 +626,9 @@ function StickyNote({
   onToggle, onEdit, onEliminar, onOpenActions, onMoveUp, onMoveDown, canUp, canDown, onToggleSubtask,
 }) {
   const openMenu = useCallback(() => onOpenActions(task), [onOpenActions, task]);
-  // Toque corto = abrir menú (no toggle). Long-press también abre menú.
-  const lp = useLongPress(openMenu, openMenu);
+  const editTask = useCallback(() => onEdit(task), [onEdit, task]);
+  // Toque corto = abrir editor. Long-press = abrir menú de acciones.
+  const lp = useLongPress(openMenu, editTask);
 
   const isDark = DARK_CARDS.has(task.color);
   const textColor = isDark ? "#fff" : "#111";
@@ -692,7 +693,7 @@ function StickyNote({
       </button>
       {/* Doodles — hijos del wrapper .card, hermanos de .paper (NUNCA dentro del clip-path) */}
       {index === 1 && (
-        <svg className="doodle butterfly" viewBox="0 0 100 100" fill="none" style={{ position: "absolute", pointerEvents: "none", zIndex: 4, opacity: 1, width: "66px", bottom: "calc(100% - 6px)", right: "14%" }} aria-hidden="true">
+        <svg className="doodle butterfly" viewBox="0 0 100 100" fill="none" style={{ position: "absolute", pointerEvents: "none", zIndex: 4, opacity: 1, width: "66px", bottom: "calc(100% - 6px)", right: "20%" }} aria-hidden="true">
           <g stroke="#4ADE50" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M48 52C30 20 4 22 8 44C10 58 34 62 48 52Z" />
             <path d="M48 56C34 66 18 80 28 88C38 94 46 76 48 62" />
@@ -717,6 +718,43 @@ function StickyNote({
           <circle cx="34" cy="46" r="3" />
         </svg>
       )}
+      {/* Botón redondo de opciones — hermano de .paper, NUNCA dentro del clip-path */}
+      <button
+        type="button"
+        aria-label="Opciones de la tarea"
+        aria-haspopup="menu"
+        onClick={(e) => { e.stopPropagation(); openMenu(); }}
+        style={{
+          position: "absolute",
+          top: "-8px",
+          right: "-8px",
+          zIndex: 5,
+          width: "40px",
+          height: "40px",
+          padding: "0",
+          border: "none",
+          background: "transparent",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          "--i": index,
+        }}
+        className="tb-options-btn"
+      >
+        <span style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "28px",
+          height: "28px",
+          borderRadius: "50%",
+          background: "rgba(17,17,17,0.92)",
+          border: "1px solid rgba(255,255,255,0.28)",
+        }}>
+          <MoreHorizontal size={16} strokeWidth={2} className="text-white" />
+        </span>
+      </button>
     </div>
   );
 }
@@ -1432,6 +1470,16 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
         /* focus-visible en el botón .paper para accesibilidad */
         .paper:focus-visible { outline: 2px solid #fff !important; outline-offset: 2px; }
 
+        /* Botón redondo de opciones — animación pop + hover/active + focus-visible */
+        @keyframes tb-pop { 0% { transform: scale(0.4); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
+        .tb-options-btn { animation: tb-pop 260ms cubic-bezier(0.2, 1.4, 0.4, 1) both; animation-delay: calc(var(--i, 0) * 60ms); transition: transform 120ms; }
+        .tb-options-btn:hover { transform: scale(1.08); }
+        .tb-options-btn:active { transform: scale(0.9); }
+        .tb-options-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        @media (prefers-reduced-motion: reduce) {
+          .tb-options-btn { animation: none !important; transition: none !important; }
+        }
+
         .tb-corner-fold { position: absolute; right: 0; bottom: 0; width: 0; height: 0; border-style: solid; border-width: 0 0 16px 16px; border-color: transparent transparent rgba(0,0,0,0.18) rgba(255,255,255,0.25); border-bottom-right-radius: 4px; }
 
         .tb-scroll::-webkit-scrollbar { width: 6px; }
@@ -1623,7 +1671,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
           <button type="button" onClick={() => setFilterOpen(true)} aria-label="Filtrar tareas" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><Filter size={18} strokeWidth={1.5} className="text-white" /></button>
           <button type="button" onClick={jumpToNextUp} aria-label="Saltar a la siguiente tarea" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center" }}><Clock size={18} strokeWidth={1.5} className="text-white" /></button>
         </div>
-        <button type="button" onClick={openAdd} aria-label="Añadir tarea" className="glass plus" style={{ pointerEvents: "auto", display: "flex", alignItems: "center", justifyContentContent: "center", height: "44px", width: "64px", borderRadius: "22px", background: "rgba(30,30,30,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.14)", cursor: "pointer" }}><Plus size={18} strokeWidth={1.5} className="text-white" /></button>
+        <button type="button" onClick={openAdd} aria-label="Añadir tarea" className="glass plus" style={{ pointerEvents: "auto", display: "flex", alignItems: "center", justifyContent: "center", height: "44px", width: "64px", borderRadius: "22px", background: "rgba(30,30,30,0.55)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", border: "1px solid rgba(255,255,255,0.14)", cursor: "pointer", padding: "0", gap: "0" }}><Plus size={18} strokeWidth={1.5} className="text-white" /></button>
       </div>
 
       {/* Add / Edit sheet */}
