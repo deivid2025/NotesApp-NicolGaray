@@ -401,9 +401,9 @@ function DoodleFrame() {
 
 function ConnectorArrow({ index, leftToRight, animate }) {
   const path = leftToRight ? PATH_LEFT_TO_RIGHT : PATH_RIGHT_TO_LEFT;
-  // Punta en V abierta (dos trazos cortos) al final de la curva, apuntando hacia abajo
+  // Punta en V abierta — dos trazos rectos nítidos formando una V clara, apuntando hacia abajo
   const tipX = leftToRight ? 270 : 120;
-  const arrowHead = `M ${tipX - 9} 42 L ${tipX} 50 L ${tipX + 9} 42`;
+  const arrowHead = `M ${tipX - 11} 40 L ${tipX} 50 L ${tipX + 11} 40`;
   const color = "#C0392B"; // rojo ladrillo como la referencia
   const opacity = animate ? "0.9" : "0.8";
   return (
@@ -623,15 +623,6 @@ function StickyNote({
           borderRadius: "255px 15px 225px 15px/15px 225px 15px 255px",
         }}
       >
-        {/* status accent strip (top) */}
-        {!isDone && (
-          <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] rounded-t-[4px]" style={{ background: statusMeta.color, opacity: status === "later" ? 0.45 : 0.95 }} />
-        )}
-        {/* washi tape */}
-        <span aria-hidden="true" className="pointer-events-none absolute -top-2 left-1/2 h-4 w-16 -translate-x-1/2 rotate-[-4deg] opacity-80" style={{ background: "repeating-linear-gradient(135deg, rgba(255,255,255,0.55) 0 6px, rgba(255,255,255,0.25) 6px 12px)", borderRadius: "2px", boxShadow: "0 1px 2px rgba(0,0,0,0.25)" }} />
-        {/* corner fold */}
-        <span aria-hidden="true" className="tb-corner-fold" />
-
         {/* done stamp */}
         {isDone && (
           <span aria-hidden="true" className="tb-stamp pointer-events-none absolute -right-2 top-6 z-[3] select-none" style={{ color: "#0b0b0c", border: "3px double #0b0b0c", borderRadius: "4px", padding: "1px 6px", fontFamily: "var(--font-patrick-hand), cursive", fontWeight: 700, fontSize: "13px", letterSpacing: "1px", transform: "rotate(-8deg)", background: "rgba(255,255,255,0.25)" }}>DONE</span>
