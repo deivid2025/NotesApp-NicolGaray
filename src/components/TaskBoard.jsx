@@ -203,7 +203,7 @@ const STATUS_META = {
 
 /* ArrowLayer — un único SVG con un solo <path> que dibuja todas las flechas.
    Mide las posiciones reales de las .card con getBoundingClientRect. */
-function ArrowLayer({ containerRef }) {
+function ArrowLayer({ containerRef, deps = [] }) {
   const svgRef = useRef(null);
   const pathRef = useRef(null);
 
@@ -244,11 +244,16 @@ function ArrowLayer({ containerRef }) {
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => draw());
     const ro = new ResizeObserver(() => draw());
     if (containerRef.current) ro.observe(containerRef.current);
+    // Forzar redraw después de que todo se asiente (imágenes, fuentes, layout)
+    const t1 = setTimeout(() => draw(), 300);
+    const t2 = setTimeout(() => draw(), 1000);
     return () => {
       window.removeEventListener("resize", onResize);
       ro.disconnect();
+      clearTimeout(t1);
+      clearTimeout(t2);
     };
-  }, [draw, containerRef]);
+  }, [draw, containerRef, deps]);
 
   return (
     <svg
@@ -621,8 +626,8 @@ function StickyNote({
   onToggle, onEdit, onEliminar, onOpenActions, onMoveUp, onMoveDown, canUp, canDown, onToggleSubtask,
 }) {
   const openMenu = useCallback(() => onOpenActions(task), [onOpenActions, task]);
-  const toggle = useCallback(() => onToggle(task), [onToggle, task]);
-  const lp = useLongPress(openMenu, toggle);
+  // Toque corto = abrir menú (no toggle). Long-press también abre menú.
+  const lp = useLongPress(openMenu, openMenu);
 
   const isDark = DARK_CARDS.has(task.color);
   const textColor = isDark ? "#fff" : "#111";
@@ -1424,6 +1429,9 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
         .tb-note-btn:hover { transform: rotate(0deg) translateY(-3px) !important; }
         .tb-note-btn:active { transform: rotate(0deg) scale(0.98) !important; }
 
+        /* focus-visible en el botón .paper para accesibilidad */
+        .paper:focus-visible { outline: 2px solid #fff !important; outline-offset: 2px; }
+
         .tb-corner-fold { position: absolute; right: 0; bottom: 0; width: 0; height: 0; border-style: solid; border-width: 0 0 16px 16px; border-color: transparent transparent rgba(0,0,0,0.18) rgba(255,255,255,0.25); border-bottom-right-radius: 4px; }
 
         .tb-scroll::-webkit-scrollbar { width: 6px; }
@@ -1524,7 +1532,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
 
         {/* Task list — contenedor relative con ArrowLayer */}
         <div className="px-4 relative" style={{ paddingBottom: "170px" }} ref={taskListRef}>
-          <ArrowLayer containerRef={taskListRef} />
+          <ArrowLayer containerRef={taskListRef} deps={[visibleTasks.length, completedIds.size]} />
           {visibleTasks.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               {!searchQuery && (
