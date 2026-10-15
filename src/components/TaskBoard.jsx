@@ -609,18 +609,17 @@ function StickyNote({
         onPointerCancel={lp.onPointerCancel}
         onContextMenu={lp.onContextMenu}
         aria-label={isDone ? `Marcar «${task.title}» como no hecha` : `Marcar «${task.title}» como hecha`}
-        className={`tb-note-btn tb-paper relative block w-full rounded-2xl p-[14px] text-left text-[#111] ${ringClass} ${isNextUp ? "tb-nextup" : ""}`}
+        className={`tb-note-btn relative block w-full p-[14px] text-left text-[#111] ${ringClass} ${isNextUp ? "tb-nextup" : ""}`}
         style={{
           background: task.color,
           transform: `rotate(${task.rotation}deg)`,
-          boxShadow: "4px 5px 0 rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.35)",
+          boxShadow: "4px 5px 0 rgba(0,0,0,0.45)",
           fontFamily: "var(--font-patrick-hand), cursive",
           opacity: isDone ? 0.55 : 1,
           touchAction: "manipulation",
+          borderRadius: "255px 15px 225px 15px/15px 225px 15px 255px",
         }}
       >
-        {/* crumpled paper texture overlay (subtle bumps + valleys + crease lines) */}
-        <span aria-hidden="true" className="tb-paper-texture" />
         {/* status accent strip (top) */}
         {!isDone && (
           <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] rounded-t-[4px]" style={{ background: statusMeta.color, opacity: status === "later" ? 0.45 : 0.95 }} />
@@ -853,6 +852,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
 
   // display name: profile name if set, else the prop default
   const displayName = (profile?.name || "").trim() || name;
+  const firstName = displayName.split(" ")[0];
 
   // status breakdown for the header summary
   const statusCounts = useMemo(() => {
@@ -1475,80 +1475,54 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
         <DoodleFrame />
         <BgDoodles />
 
-        {/* Header */}
-        <header className="relative px-5 pb-4 pt-9">
-          {/* Flor — reposicionada abajo a la derecha del header, no se superpone con textos */}
-          <FlowerDoodle className="pointer-events-none absolute right-1 bottom-2 h-20 w-16 sm:h-24 sm:w-20 z-[1]" />
+        {/* Header — minimalista como la referencia "Hello Bea" */}
+        <header className="relative px-6 pb-3 pt-10">
+          {/* Flor — esquina superior derecha, grande, con cara sonriente, z-index por debajo del texto */}
+          <FlowerDoodle className="pointer-events-none absolute right-4 top-8 h-24 w-20 sm:h-28 sm:w-24 z-[1]" />
 
-          {/* date + streak row */}
-          <div className="mb-2 flex items-center justify-between">
-            <span className="tb-themed-surface inline-flex items-center gap-1.5 rounded-full border border-white/10 px-2.5 py-1 text-[11px] tb-themed-muted">
-              <Calendar size={12} /> {today}
-            </span>
-            {streak > 0 && (
-              <span className="tb-flame inline-flex items-center gap-1 rounded-full border border-[#ff8a3d]/40 bg-[#ff8a3d]/15 px-2.5 py-1 text-[12px] font-bold text-[#ff8a3d]" style={{ fontFamily: "var(--font-patrick-hand), cursive" }}>
-                <Flame size={13} /> Racha de {streak} día{streak === 1 ? "" : "s"}
-              </span>
+          {/* Saludo simple: "Hola Deivid" sans bold, sin avatar/emoji */}
+          <h1 className="relative z-[2] text-[34px] font-extrabold leading-none tracking-tight text-white" style={{ letterSpacing: "-0.02em" }}>
+            Hola {firstName}
+          </h1>
+
+          {/* Subtítulo handwritten 2 líneas, gris, "X tareas" en blanco bold */}
+          <p className="relative z-[2] mt-2" style={{ fontFamily: "var(--font-caveat), cursive", fontSize: "26px", lineHeight: "1.25", color: "#9ca3af", maxWidth: "70%" }}>
+            {remaining === 0 ? (
+              <span style={{ color: "#fff", fontWeight: 700 }}>¡Todo listo hoy!</span>
+            ) : (
+              <>
+                Te quedan <span style={{ color: "#fff", fontWeight: 700 }}>{remaining} tarea{remaining === 1 ? "" : "s"}</span><br />
+                por completar hoy..
+              </>
             )}
-          </div>
-
-          {/* avatar + greeting — avatar is tappable to edit profile.
-              Saludo con max-width para que la flor no tape; truncar nombres largos con ellipsis. */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={openProfile}
-              aria-label="Editar perfil"
-              title="Editar tu perfil"
-              className="group relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-2xl transition-transform active:scale-95"
-              style={{ background: profile?.avatarColor || "#3b82f6", boxShadow: `0 0 0 2px ${profile?.avatarColor || "#3b82f6"}55, 3px 3px 0 rgba(0,0,0,0.4)` }}
-            >
-              <span className="leading-none">{profile?.avatar || "🙂"}</span>
-              <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border border-white/20 bg-neutral-900 text-white/70 transition-colors group-hover:bg-[#2563eb] group-hover:text-white">
-                <PencilLine size={10} />
-              </span>
-            </button>
-            <div className="relative z-[2] min-w-0 flex-1" style={{ maxWidth: "calc(100% - 120px)" }}>
-              <h1 className="truncate text-2xl font-bold leading-tight tracking-tight tb-themed-text sm:text-3xl lg:text-4xl" title={`${greeting.word}, ${displayName}`}>
-                <span className="inline-flex items-center gap-x-2">
-                  <GreetingDoodle emoji={greeting.emoji} className="h-5 w-5 shrink-0 sm:h-6 sm:w-6 lg:h-7 lg:w-7" />
-                  <span className="whitespace-nowrap">{greeting.word},</span>
-                  <span className="whitespace-nowrap overflow-hidden text-ellipsis">{displayName}</span>
-                </span>
-              </h1>
-            </div>
-          </div>
-          <svg className="relative z-[2] mt-0.5 h-2 w-40 text-[#ffe94a]/70" viewBox="0 0 160 8" fill="none" aria-hidden="true">
-            <path d="M2 5 C 30 1, 60 7, 90 4 S 140 2, 158 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-          </svg>
-          <p className="relative z-[2] mt-2 tb-themed-muted" style={{ fontFamily: "var(--font-caveat), cursive", fontSize: "24px", lineHeight: "1.2", fontWeight: 500, maxWidth: "calc(100% - 90px)" }}>
-            <span>{subtitleNode}</span>
           </p>
 
-          <div className="mt-3 flex items-center gap-3">
-            <ProgressRing done={doneCount} total={total} size={42} />
-            <div className="text-[12px] leading-tight tb-themed-muted">
-              <div className="tb-themed-text" style={{ fontFamily: "var(--font-patrick-hand), cursive", fontSize: "15px" }}>{doneCount} de {total} hechas</div>
-              <div>¡sigue con la racha! ✦</div>
+          {/* Botón azul paralelogramo sesgado, fuente handwritten */}
+          <div className="mt-6 flex justify-center">
+            <div className="px-5 py-1.5" style={{ background: "#0EA5E9", transform: "skewX(-12deg)" }}>
+              <span className="text-[16px] font-semibold text-white" style={{ fontFamily: "var(--font-caveat), cursive", display: "inline-block", transform: "skewX(12deg)" }}>What's on deck today</span>
             </div>
           </div>
 
-          {/* total deck time — solo undo, sin iconos de enfoque/tema/más acciones */}
+          {/* avatar flotante pequeño abajo-derecha (editable, pero no en el saludo) */}
+          <button
+            type="button"
+            onClick={openProfile}
+            aria-label="Editar perfil"
+            title="Editar tu perfil"
+            className="group absolute bottom-2 right-2 z-[3] flex h-9 w-9 items-center justify-center rounded-full text-lg transition-transform active:scale-95"
+            style={{ background: profile?.avatarColor || "#3b82f6", boxShadow: `0 0 0 2px ${profile?.avatarColor || "#3b82f6"}55, 2px 2px 0 rgba(0,0,0,0.4)` }}
+          >
+            <span className="leading-none">{profile?.avatar || "🙂"}</span>
+          </button>
+
+          {/* undo button (solo si hay acciones) */}
           {undoStack.length > 0 && (
-            <div className="mt-3 flex items-center">
-              <button type="button" onClick={undo} aria-label="Deshacer última acción" title="Deshacer (Ctrl/Cmd+Z)" className="flex h-7 w-7 items-center justify-center rounded-full border border-[#ffe94a]/40 bg-[#ffe94a]/15 text-[#ffe94a] transition-colors hover:bg-[#ffe94a]/25">
-                <Undo2 size={13} />
-              </button>
-            </div>
+            <button type="button" onClick={undo} aria-label="Deshacer" title="Deshacer (Ctrl/Cmd+Z)" className="absolute bottom-2 left-2 z-[3] flex h-8 w-8 items-center justify-center rounded-full border border-[#ffe94a]/40 bg-[#ffe94a]/15 text-[#ffe94a]">
+              <Undo2 size={14} />
+            </button>
           )}
         </header>
-
-        {/* Skewed label */}
-        <div className="mb-3 flex justify-center px-5">
-          <div className="rounded-md px-4 py-1.5" style={{ background: "#2563eb", transform: "skewX(-12deg)" }}>
-            <span className="text-[13px] font-semibold tracking-wide text-white" style={{ display: "inline-block", transform: "skewX(12deg)" }}>What's on deck today</span>
-          </div>
-        </div>
 
         {/* Active filter chip */}
         {filter !== "all" && (
@@ -1614,7 +1588,7 @@ export default function TaskBoard({ name = "Bea", tasks = MOCK_TASKS }) {
                 )}
               <div id={`task-${task.id}`} className="relative mb-16 last:mb-0">
                 <div className={`flex ${isLeft ? "justify-start" : "justify-end"}`}>
-                  <div className="w-[62%]">
+                  <div className="w-[75%]">
                     <StickyNote
                       task={task}
                       index={i}
