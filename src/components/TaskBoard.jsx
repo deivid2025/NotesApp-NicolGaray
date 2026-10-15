@@ -404,14 +404,14 @@ function ConnectorArrow({ index, leftToRight, animate }) {
   // Punta en V abierta — dos trazos rectos nítidos formando una V clara, apuntando hacia abajo
   const tipX = leftToRight ? 270 : 120;
   const arrowHead = `M ${tipX - 11} 40 L ${tipX} 50 L ${tipX + 11} 40`;
-  const color = "#C0392B"; // rojo ladrillo como la referencia
-  const opacity = animate ? "0.9" : "0.8";
+  const color = "#8B3A3A"; // rojo óxido como la referencia
+  const opacity = animate ? "0.95" : "0.85";
   return (
     <svg className="pointer-events-none absolute left-0 right-0 top-full h-16 w-full overflow-visible" viewBox="0 0 390 56" fill="none" aria-hidden="true" style={{ zIndex: 5 }}>
-      {/* trazo continuo curvo, fino (2px) */}
-      <path d={path} stroke={color} strokeOpacity={opacity} strokeWidth="2" strokeLinecap="round" fill="none" />
-      {/* punta en V abierta (dos trazos cortos) */}
-      <path d={arrowHead} stroke={color} strokeOpacity={opacity} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* trazo continuo curvo, fino (1.5px) */}
+      <path d={path} stroke={color} strokeOpacity={opacity} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      {/* punta en V abierta — angular (sin round cap), dos trazos rectos en V */}
+      <path d={arrowHead} stroke={color} strokeOpacity={opacity} strokeWidth="1.5" strokeLinecap="butt" strokeLinejoin="miter" fill="none" />
     </svg>
   );
 }
@@ -638,33 +638,15 @@ function StickyNote({
             </span>
           </div>
 
-          {/* title */}
-          <h3 className="mt-2 line-clamp-2 min-w-0 overflow-hidden text-[16px] font-normal leading-snug" style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textDecoration: isDone ? "line-through" : "none", textDecorationThickness: "2px" }}>{task.title}</h3>
+          {/* title — handwritten negro, sin truncar (envuelve a 2-3 líneas) */}
+          <h3 className="mt-2 min-w-0 text-[16px] font-normal leading-snug" style={{ fontFamily: "var(--font-patrick-hand), cursive", color: "#000", textDecoration: isDone ? "line-through" : "none", textDecorationThickness: "2px", wordBreak: "break-word" }}>{task.title}</h3>
 
-          {/* pills: time, duration, status, tag */}
+          {/* pills: solo 2 (hora + duración), oscuros translúcidos, texto blanco */}
           <div className="mt-3 flex min-w-0 flex-wrap gap-1.5">
-            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-medium" style={{ background: "rgba(17,17,17,0.85)", color: "#fff" }}>
+            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-medium" style={{ background: "rgba(0,0,0,0.7)", color: "#fff" }}>
               <Clock size={11} strokeWidth={2.5} />{task.startTime} - {task.endTime}
             </span>
-            <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[12px] font-medium" style={{ background: "rgba(17,17,17,0.85)", color: "#fff" }}>en {task.duration}min</span>
-            {!isDone && status !== "later" && (
-              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: statusMeta.color, color: "#0b0b0c" }}>{statusMeta.label}</span>
-            )}
-            {task.tag && TAG_MAP[task.tag] && (
-              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: "rgba(255,255,255,0.9)", color: TAG_MAP[task.tag].color, border: `1px solid ${TAG_MAP[task.tag].color}40` }}>
-                <Tag size={9} />{TAG_MAP[task.tag].label}
-              </span>
-            )}
-            {task.priority && PRIORITY_MAP[task.priority] && (
-              <span className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold" style={{ background: PRIORITY_MAP[task.priority].color, color: "#0b0b0c" }}>
-                {PRIORITY_MAP[task.priority].label}
-              </span>
-            )}
-            {task.recurrence && task.recurrence !== "none" && RECURRENCE_MAP[task.recurrence] && (
-              <span className="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold" style={{ background: `${RECURRENCE_MAP[task.recurrence].color}25`, color: RECURRENCE_MAP[task.recurrence].color, border: `1px solid ${RECURRENCE_MAP[task.recurrence].color}60` }} title={`Se repite ${RECURRENCE_MAP[task.recurrence].label.toLowerCase()}`}>
-                <Repeat size={8} />{RECURRENCE_MAP[task.recurrence].label}
-              </span>
-            )}
+            <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[12px] font-medium" style={{ background: "rgba(0,0,0,0.7)", color: "#fff" }}>en {task.duration}min</span>
           </div>
 
           {/* subtask checklist + progress */}
