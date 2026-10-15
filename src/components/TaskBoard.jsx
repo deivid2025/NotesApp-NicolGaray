@@ -398,15 +398,17 @@ function DoodleFrame() {
 
 function ConnectorArrow({ index, leftToRight, animate }) {
   const path = leftToRight ? PATH_LEFT_TO_RIGHT : PATH_RIGHT_TO_LEFT;
-  const markerId = `tb-arrow-${index}`;
+  // Punta en V abierta (dos trazos cortos) al final de la curva
+  const tipX = leftToRight ? 270 : 120;
+  const arrowHead = `M ${tipX - 8} 50 L ${tipX} 56 L ${tipX + 8} 50`;
+  const color = "#ff6b7a";
+  const opacity = animate ? "0.95" : "0.8";
   return (
-    <svg className="pointer-events-none absolute left-0 right-0 top-full h-14 w-full" viewBox="0 0 390 56" fill="none" aria-hidden="true">
-      <defs>
-        <marker id={markerId} viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-          <path d="M0 0 L10 5 L0 10 z" fill="#ff6b7a" fillOpacity="0.75" />
-        </marker>
-      </defs>
-      <path d={path} stroke="#ff6b7a" strokeOpacity={animate ? "0.95" : "0.75"} strokeWidth="2" strokeDasharray="6 6" strokeLinecap="round" fill="none" markerEnd={`url(#${markerId})`} className={animate ? "tb-dash" : ""} />
+    <svg className="pointer-events-none absolute left-0 right-0 top-full h-14 w-full overflow-visible" viewBox="0 0 390 56" fill="none" aria-hidden="true">
+      {/* trazo continuo curvo, NO punteado */}
+      <path d={path} stroke={color} strokeOpacity={opacity} strokeWidth="2.2" strokeLinecap="round" fill="none" />
+      {/* punta en V abierta (dos trazos cortos) */}
+      <path d={arrowHead} stroke={color} strokeOpacity={opacity} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
     </svg>
   );
 }
