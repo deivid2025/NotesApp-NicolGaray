@@ -33,14 +33,16 @@ export const metadata: Metadata = {
   openGraph: {
     title: "NotesApp Deivid Uchiha",
     description: "Tablero de tareas con estilo doodle, notas adhesivas y logros inspirados en Bleach.",
-    url: "https://chat.z.ai",
+    url: "https://github.com/deivid2025/NotesApp-NicolGaray",
     siteName: "NotesApp Deivid Uchiha",
     type: "website",
+    images: [{ url: "/app-icon.png", width: 1024, height: 1024, alt: "NotesApp Deivid Uchiha" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "NotesApp Deivid Uchiha",
     description: "Tablero de tareas con estilo doodle, notas adhesivas y logros inspirados en Bleach.",
+    images: ["/app-icon.png"],
   },
 };
 
