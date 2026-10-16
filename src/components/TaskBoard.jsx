@@ -103,7 +103,7 @@ import { usePushNotifications } from "@/hooks/use-push-notifications";
  *
  * Shape: { id, title, emoji, color, startTime, endTime, duration, rotation }
  */
-const NEON_COLORS = ["#6BE05A", "#FAFF6B", "#FF0A8C", "#9333FF", "#FFA8E6", "#FF8A3D"];
+const NEON_COLORS = ["#FF1493", "#FFF176", "#8A2BE2", "#FFB6C1", "#E67E22", "#39FF14"];
 
 /* Polígonos clip-path por índice (% 6) — formas orgánicas recortadas a mano */
 const PAPER_SHAPES = [
@@ -119,7 +119,7 @@ const PAPER_SHAPES = [
 const CARD_ROTATIONS = [-1.2, 1, -0.8, 1.4, -1.5, 0.9];
 
 /* Colores de card oscuros (texto blanco) vs claros (texto negro) */
-const DARK_CARDS = new Set(["#FF0A8C", "#9333FF"]);
+const DARK_CARDS = new Set(["#FF1493", "#8A2BE2", "#E67E22"]);
 
 const TAGS = [
   { id: "work",      label: "Trabajo",      icon: Briefcase,   color: "#3b82f6" },
@@ -640,8 +640,8 @@ function StickyNote({
 
   const isDark = DARK_CARDS.has(task.color);
   const textColor = isDark ? "#fff" : "#111";
-  const pillBg = task.color === "#FAFF6B" ? "#E6C200" : "rgba(255,255,255,0.28)";
-  const dotBg = task.color === "#FAFF6B" ? "#E6C200" : "rgba(255,255,255,0.4)";
+  const pillBg = task.color === "#FFF176" ? "rgba(0,0,0,0.25)" : "rgba(0,0,0,0.35)";
+  const dotBg = task.color === "#FFF176" ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.4)";
   // cards 2,4,6 (índices 1,3,5) van a la derecha
   const isRight = index % 2 === 1;
 
@@ -664,15 +664,14 @@ function StickyNote({
           padding: "16px 20px",
           minHeight: "84px",
           background: task.color,
-          clipPath: PAPER_SHAPES[index % 6],
+          borderRadius: "22px",
           color: textColor,
           fontFamily: "var(--font-patrick-hand), cursive",
           display: "block",
           width: "100%",
           textAlign: "left",
           border: "none",
-          borderRadius: 0,
-          boxShadow: "none",
+          boxShadow: "3px 3px 0px rgba(0,0,0,0.4)",
           filter: "none",
           opacity: 1,
         }}
@@ -696,12 +695,12 @@ function StickyNote({
           <h3 style={{ margin: "0 0 10px", fontWeight: 400, fontSize: "15px", lineHeight: "1.3", wordBreak: "break-word", textDecoration: isDone ? "line-through" : "none" }}>{task.title}</h3>
           {/* fila de pills: clear both, flex nowrap */}
           <div style={{ clear: "both", display: "flex", alignItems: "center", gap: "4px", flexWrap: "nowrap", whiteSpace: "nowrap" }}>
-            <span className="pill" style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "3px 8px", borderRadius: "99px", background: pillBg, fontSize: "10.5px" }}>
+            <span className="pill" style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "3px 8px", borderRadius: "12px", background: pillBg, color: "#fff", fontWeight: 600, fontSize: "10.5px" }}>
               <Clock size={10} strokeWidth={2.5} />{task.startTime} - {task.endTime}
             </span>
             {/* punto 4x4 entre pills */}
             <span style={{ display: "inline-block", width: "4px", height: "4px", borderRadius: "50%", background: dotBg, flexShrink: 0 }} />
-            <span className="pill" style={{ display: "inline-flex", alignItems: "center", padding: "3px 8px", borderRadius: "99px", background: pillBg, fontSize: "10.5px" }}>en {task.duration}min</span>
+            <span className="pill" style={{ display: "inline-flex", alignItems: "center", padding: "3px 8px", borderRadius: "12px", background: pillBg, color: "#fff", fontWeight: 600, fontSize: "10.5px" }}>en {task.duration}min</span>
           </div>
         </button>
 
