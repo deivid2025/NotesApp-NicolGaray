@@ -145,21 +145,29 @@ const RECURRENCE = [
 const RECURRENCE_MAP = Object.fromEntries(RECURRENCE.map((r) => [r.id, r]));
 
 const MOCK_TASKS = [
-  { id: 1, title: "Estiramiento matutino y una taza de té tranquila", emoji: "🧘", color: NEON_COLORS[0], startTime: "7am", endTime: "7:15am", duration: 15, rotation: -2, tag: "health", priority: 3, recurrence: "daily", subtasks: [] },
-  { id: 2, title: "Bocetar ideas de logo en el cuaderno", emoji: "✏️", color: NEON_COLORS[1], startTime: "9:30am", endTime: "10:15am", duration: 45, rotation: 3, tag: "creative", priority: 2, recurrence: "none", subtasks: [
-    { id: "s1", text: "Mood board de 10 referencias", done: true },
-    { id: "s2", text: "3 conceptos rápidos", done: false },
-    { id: "s3", text: "Elegir un favorito", done: false },
+  { id: 1, title: "Codear el sprint de la mañana con café", emoji: "💻", color: NEON_COLORS[0], startTime: "8am", endTime: "10am", duration: 120, rotation: -2, tag: "work", priority: 1, recurrence: "daily", subtasks: [
+    { id: "s1", text: "Review del PR de Mia", done: true },
+    { id: "s2", text: "Fix del bug en el login", done: false },
+    { id: "s3", text: "Deploy a staging", done: false },
   ] },
-  { id: 3, title: "Café con Mia en la cafetería de la esquina", emoji: "☕", color: NEON_COLORS[2], startTime: "11am", endTime: "11:45am", duration: 45, rotation: -1, tag: "personal", priority: 3, recurrence: "none", subtasks: [] },
-  { id: 4, title: "Terminar las diapositivas para la presentación del martes", emoji: "💼", color: NEON_COLORS[3], startTime: "1pm", endTime: "1:30pm", duration: 30, rotation: 2, tag: "work", priority: 1, recurrence: "none", subtasks: [
-    { id: "s4", text: "Diapositiva de introducción", done: true },
-    { id: "s5", text: "Problema + solución", done: true },
-    { id: "s6", text: "Nivel de precios", done: false },
-    { id: "s7", text: "Llamada a la acción final", done: false },
+  { id: 2, title: "Reunión de gerencia — métricas del trimestre", emoji: "📊", color: NEON_COLORS[1], startTime: "10:30am", endTime: "11:30am", duration: 60, rotation: 3, tag: "work", priority: 1, recurrence: "weekly", subtasks: [
+    { id: "s4", text: "Reporte de ingresos", done: true },
+    { id: "s5", text: "KPIs del equipo", done: true },
+    { id: "s6", text: "Plan del próximo sprint", done: false },
   ] },
-  { id: 5, title: "Regar las plantas y ordenar el escritorio", emoji: "🌿", color: NEON_COLORS[4], startTime: "3:15pm", endTime: "3:30pm", duration: 15, rotation: -3, tag: "errands", priority: 3, recurrence: "weekly", subtasks: [] },
-  { id: 6, title: "Paseo nocturno + podcast junto al río", emoji: "🎧", color: NEON_COLORS[5], startTime: "6pm", endTime: "6:30pm", duration: 30, rotation: 1, tag: "health", priority: 2, recurrence: "daily", subtasks: [] },
+  { id: 3, title: "Tereré con Mia en la galería Asunción", emoji: "🧉", color: NEON_COLORS[2], startTime: "12pm", endTime: "1pm", duration: 60, rotation: -1, tag: "personal", priority: 3, recurrence: "daily", subtasks: [] },
+  { id: 4, title: "Practicar Hapkido — clase de la tarde", emoji: "🥋", color: NEON_COLORS[3], startTime: "5pm", endTime: "6:30pm", duration: 90, rotation: 2, tag: "health", priority: 2, recurrence: "daily", subtasks: [
+    { id: "s7", text: "Calentamiento + estiramientos", done: false },
+    { id: "s8", text: "Técnicas de luxación", done: false },
+    { id: "s9", text: "Randori (combate)", done: false },
+    { id: "s10", text: "Enfriamiento", done: false },
+  ] },
+  { id: 5, title: "Torneo de vóley — Galería Asunción", emoji: "🏐", color: NEON_COLORS[4], startTime: "7pm", endTime: "9pm", duration: 120, rotation: -3, tag: "health", priority: 2, recurrence: "weekly", subtasks: [
+    { id: "s11", text: "Calentar con el equipo", done: false },
+    { id: "s12", text: "Partido 1 — cuartos", done: false },
+    { id: "s13", text: "Partido 2 — semis", done: false },
+  ] },
+  { id: 6, title: "Codear de noche — feature del chat en vivo", emoji: "🌙", color: NEON_COLORS[5], startTime: "9:30pm", endTime: "11pm", duration: 90, rotation: 1, tag: "work", priority: 2, recurrence: "none", subtasks: [] },
 ];
 
 const EMOJI_CHOICES = [
