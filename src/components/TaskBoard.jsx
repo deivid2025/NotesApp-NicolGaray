@@ -119,7 +119,7 @@ const PAPER_SHAPES = [
 const CARD_ROTATIONS = [-1.2, 1, -0.8, 1.4, -1.5, 0.9];
 
 /* Colores de card oscuros (texto blanco) vs claros (texto negro) */
-const DARK_CARDS = new Set(["#FF1493", "#8A2BE2", "#E67E22"]);
+const DARK_CARDS = new Set(["#8A2BE2", "#FFB6C1", "#E67E22"]);
 
 const TAGS = [
   { id: "work",      label: "Trabajo",      icon: Briefcase,   color: "#3b82f6" },
@@ -664,14 +664,15 @@ function StickyNote({
           padding: "16px 20px",
           minHeight: "84px",
           background: task.color,
-          borderRadius: "22px",
+          clipPath: PAPER_SHAPES[index % 6],
           color: textColor,
           fontFamily: "var(--font-patrick-hand), cursive",
           display: "block",
           width: "100%",
           textAlign: "left",
           border: "none",
-          boxShadow: "3px 3px 0px rgba(0,0,0,0.4)",
+          borderRadius: 0,
+          boxShadow: "none",
           filter: "none",
           opacity: 1,
         }}
