@@ -162,7 +162,7 @@ const MOCK_TASKS = [
     { id: "s9", text: "Randori (combate)", done: false },
     { id: "s10", text: "Enfriamiento", done: false },
   ] },
-  { id: 5, title: "Torneo de vóley — Galería Asunción", emoji: "🏐", color: NEON_COLORS[4], startTime: "7pm", endTime: "9pm", duration: 120, rotation: -3, tag: "health", priority: 2, recurrence: "weekly", subtasks: [
+  { id: 5, title: "Torneo de vóley — Federación Paraguaya de Vóley", emoji: "🏐", color: NEON_COLORS[4], startTime: "7pm", endTime: "9pm", duration: 120, rotation: -3, tag: "health", priority: 2, recurrence: "weekly", subtasks: [
     { id: "s11", text: "Calentar con el equipo", done: false },
     { id: "s12", text: "Partido 1 — cuartos", done: false },
     { id: "s13", text: "Partido 2 — semis", done: false },
